@@ -15,16 +15,16 @@ Statuses: **APPROVED** means supported by an explicit repository/founder decisio
 | D-007 | APPROVED | A tenant may contain one or more organizations/workspaces; membership is explicit and production domain data must be scoped so organization/tenant access can be enforced server-side with RLS. | Founder approval on 2026-08-18. This is the tenancy basis for schema, invitations, organization switching, audit, and platform administration. |
 | D-008 | APPROVED | Launch authorization starts with three backend-assigned roles: Employee, Org Admin, and Platform Admin. Owner and Manager are reserved until their distinct permissions are defined. | Founder approval on 2026-08-18. Browser role switching must never be an authorization boundary. |
 | D-009 | APPROVED | First-release domain architecture is Platform/Tenancy -> People -> Work -> Time -> Reporting/Analytics, with Security & Audit cross-cutting. Core entities are Tenant, Organization/Workspace, User Identity, Membership, Worker Profile, Department, Project, Task, Milestone, Assignment, Time Entry, Work Session, and Audit Event; reporting is derived rather than a duplicate source of truth. | Founder approval on 2026-08-18. Finance and advanced Communication receive no first-release production schema. |
+| D-105 | APPROVED | Use the Phase 3 canonical role navigation and route matrix in `WORK_OS_PHASE_3_CANONICAL_UX.md` as the first-release UX target, with merge-before-retire safeguards and non-destructive redirects/retirement only after route/parity tests. | Founder approval on 2026-08-19. Visible launch navigation is limited to approved scope; legacy and deferred routes remain registered until approved migration work proves safe replacement. |
 
 ## Proposed architecture (review before treating as product policy)
 
 | ID | Status | Recommendation | Consequence |
 |---|---|---|---|
 | D-101 | PROPOSED | Adopt Supabase Auth + Postgres + deny-by-default RLS behind typed domain repositories/services, implementing the approved tenant/organization model from D-007. | Screens depend on contracts rather than direct queries; tenant and organization boundaries must be represented explicitly where required. |
-| D-102 | PROPOSED | Keep three initial application surfaces: employee, organization administration, platform administration. | This now aligns with approved launch roles in D-008; exact route/screen canonicalization remains Phase 3 work. |
-| D-103 | PROPOSED | Canonicalize domain URLs (`/work`, `/people`, etc.) over generation-based `/admin` aliases, using redirects during migration. | Removes route ambiguity without deleting screens; requires Phase 3 approval of the route matrix first. |
+| D-102 | PROPOSED | Keep three initial application surfaces: employee, organization administration, platform administration. | This now aligns with approved launch roles in D-008 and the approved Phase 3 canonical UX. |
+| D-103 | PROPOSED | Canonicalize domain URLs (`/work`, `/people`, etc.) over generation-based `/admin` aliases, using redirects during migration. | Removes route ambiguity without deleting screens; Phase 3 now approves the target route matrix, but redirects still require parity and route tests. |
 | D-104 | PROPOSED | Use one server-state/query boundary and schema validation at all I/O boundaries; keep ephemeral UI state local. | Exact libraries should be selected only when implementing the first production vertical slice. |
-| D-105 | PROPOSED | Approve the Phase 3 canonical role navigation and route matrix in `WORK_OS_PHASE_3_CANONICAL_UX.md`. | Visible launch navigation is limited to approved scope; legacy and deferred routes remain registered until approval, parity merges, redirects, and route tests. |
 
 ## Technical target
 
@@ -35,4 +35,4 @@ React screens -> domain hooks/use-cases -> typed repository contracts
 Cross-cutting: error boundary, structured diagnostics, audit events, accessibility, CI
 ```
 
-The product/domain decisions above are approved, but the production business schema itself is not yet implemented. Migrations must be forward-only, reviewed, and paired with RLS policies and policy tests. The frontend must never be the authorization boundary.
+The product/domain/Phase 3 UX decisions above are approved, but the production business schema itself is not yet implemented. Migrations must be forward-only, reviewed, and paired with RLS policies and policy tests. The frontend must never be the authorization boundary.
