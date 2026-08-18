@@ -25,6 +25,7 @@ Statuses: **APPROVED** means supported by an explicit repository/founder decisio
 | D-102 | PROPOSED | Keep three initial application surfaces: employee, organization administration, platform administration. | This now aligns with approved launch roles in D-008 and the approved Phase 3 canonical UX. |
 | D-103 | PROPOSED | Canonicalize domain URLs (`/work`, `/people`, etc.) over generation-based `/admin` aliases, using redirects during migration. | Removes route ambiguity without deleting screens; Phase 3 now approves the target route matrix, but redirects still require parity and route tests. |
 | D-104 | PROPOSED | Use one server-state/query boundary and schema validation at all I/O boundaries; keep ephemeral UI state local. | Exact libraries should be selected only when implementing the first production vertical slice. |
+| D-106 | PROPOSED — PHASE 4 PACKET READY | Adopt the verified layer, Auth/organization context, structured error, validation, browser/server, atomic audit, and incremental adapter rules in `WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md`. | Founder approval is required before marking Phase 4 complete or beginning Phase 5; the packet creates no production schema or security implementation. |
 
 ## Technical target
 
