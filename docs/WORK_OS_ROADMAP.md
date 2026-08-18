@@ -9,11 +9,11 @@ This roadmap reports evidence, not aspirational completion. Phase 0 and cloud Tr
 | 0. Audit | COMPLETE | Prior repository/product audit exists. |
 | 1. Product Foundation | COMPLETE | Founder approved first-release scope, launch surfaces/roles, tenancy direction, and policy exclusions on 2026-08-18. |
 | 2. Domain / Product Architecture | COMPLETE | Founder approved the core domain map, ownership boundaries, dependency order, and first-release entity model on 2026-08-18. |
-| 3. Canonical UX & Screen Consolidation | DECISION PACKET READY | Founder review of `WORK_OS_PHASE_3_CANONICAL_UX.md`; after approval, redirect and retire duplicates with route tests. |
-| 4. Technical Architecture | PROPOSED | Approve the target architecture and prove it with one vertical slice. |
-| 5. Database / Security / RBAC | WAITING ON PHASES 3–4 | Approved tenancy and launch roles can now drive schema/RLS design once canonical surfaces and technical target are closed. |
+| 3. Canonical UX & Screen Consolidation | COMPLETE | Founder approved `WORK_OS_PHASE_3_CANONICAL_UX.md` on 2026-08-19; canonical role navigation, route matrix, merge safeguards, and redirect/retirement plan are locked. |
+| 4. Technical Architecture | CURRENT — PROPOSED | Approve the target architecture, repository/service boundaries, data-flow/security rules, and bounded proof design. |
+| 5. Database / Security / RBAC | WAITING ON PHASE 4 | Approved tenancy, roles and canonical surfaces can drive schema/RLS design once the technical target is closed. |
 | 6. Production Foundation | PARTIAL — EARLY WORK DONE | Quality harness and one bounded shared-contract slice exist; remaining acceptance work includes a green/managed quality baseline plus env validation, accessibility/security baselines, and operational error reporting. |
-| 7. Core Work Engine | BLOCKED | Phases 3–6 gates cleared; one project/task workflow persists securely end-to-end. |
+| 7. Core Work Engine | BLOCKED | Phases 4–6 gates cleared; one project/task workflow persists securely end-to-end. |
 | 8. People + Time + Reporting | BLOCKED | Core identity/hierarchy/time implementation is secured end-to-end. |
 | 9. Advanced Modules | BLOCKED | OQ-004/OQ-005 and other advanced-module policy decisions are approved after core dependencies. |
 | 10. Hardening & Launch | BLOCKED | Threat/performance/accessibility/recovery testing and launch runbooks pass. |
@@ -67,35 +67,39 @@ Repository reconciliation confirmed the approved three role identifiers and
 the domain dependency/ownership baseline. Historical prototype documents have
 been explicitly subordinated to the approved decisions. Deferred routes and
 contracts remain present as prototype inventory, but are not launch scope;
-their visible-navigation and route consolidation is the Phase 3 acceptance
-work, not a Phase 1/2 architecture change.
+their visible-navigation and route consolidation is governed by the approved Phase 3 plan.
 
-## Phase 3 — route/screen matrix
+## Phase 3 — Canonical UX & Screen Consolidation — APPROVED
 
-The founder-facing canonical route/screen recommendation, role navigation,
-feature-parity safeguards, and non-destructive retirement plan are ready in
-[`WORK_OS_PHASE_3_CANONICAL_UX.md`](WORK_OS_PHASE_3_CANONICAL_UX.md). Phase 3 is
-not complete until founder approval.
+Founder approved [`WORK_OS_PHASE_3_CANONICAL_UX.md`](WORK_OS_PHASE_3_CANONICAL_UX.md) on 2026-08-19.
+The approved package locks:
+- first-release role navigation for Employee, Org Admin and Platform Admin;
+- canonical route/screen targets for People, Work, Time, Essential Reporting, Audit and minimum Platform/Tenancy operations;
+- merge-before-retire safeguards for richer legacy People/Department/Work functionality;
+- deferred route families outside launch navigation;
+- a non-destructive redirect/retirement plan requiring parity and route tests before legacy retirement.
 
-`navRegistry.ts` currently registers 178 unique paths. Prefix totals are: admin 49, org 23, employee 22, finance 17, time 16, super 10, work 9, platform 8, analytics 7, people 4, communication 4, security 4, integrations 3, diagnostics 2. The manifest contains 95 path declarations but only 85 unique paths because shared Work items and two other paths are repeated across role groups.
+All 178 registered prototype routes remain source inventory until later approved migration work proves safe redirects/retirement. Approval of Phase 3 does not itself authorize destructive deletion.
 
-| Route family | Current evidence | Candidate |
-|---|---|---|
-| `/work/*` | Dedicated v2 Work screens plus older `/admin/*` Work screens | KEEP `/work/*`; MERGE old generation after workflow comparison |
-| `/people/*` | Four domain routes plus `/admin/*` equivalents/enhanced variants | KEEP domain routes; MERGE enhanced/legacy only after feature parity review |
-| `/time/*` and `/employee/*` | Domain admin routes and employee personal routes | KEEP both scopes; normalize naming under the approved Employee/Org Admin surface model |
-| `/finance/*`, `/org/finance/*`, employee money | Three overlapping generations/surfaces | OUT OF FIRST-RELEASE CANONICAL NAV; no destructive deletion until OQ-005 |
-| `/communication/*`, employee/admin communicate | Shared and role-specific generations | ADVANCED/DEFERRED; no destructive deletion yet |
-| `/analytics`, `/security`, `/integrations` plus `/admin` aliases | Repeated admin aliases | Keep essential reporting/audit routes; integrations deferred; retain aliases until redirects/access tests exist |
-| `/super/*` and `/platform/*` | Platform-admin and org/platform settings overlap | Canonicalize minimum Platform Admin tenant operations under approved tenancy model |
-| `/diagnostics/*` | Development diagnostics registered at runtime | LEGACY; exclude from production navigation/build exposure after verification |
+## Phase 4 — Technical Architecture — CURRENT
+
+Phase 4 must now verify and close the technical target before Phase 5 schema/Auth/RBAC implementation begins.
+The existing proposed target is:
+
+```text
+React screens -> domain hooks/use-cases -> typed repository contracts
+             -> Supabase browser client (Auth + RLS-protected data)
+             -> server/Edge Function only for privileged or secret-bearing operations
+Cross-cutting: error boundary, structured diagnostics, audit events, accessibility, CI
+```
+
+Phase 4 acceptance requires an approved technical boundary map, state/data-flow rules, error and validation boundaries, privileged-operation boundary, migration strategy from mock services, and a bounded vertical-slice proof design. Do not implement the Phase 5 production schema in Phase 4.
 
 ## Phases 4–10 — execution slices
-1. Phase 3: approve canonical first-release screens/routes and a safe redirect/retirement plan for duplicate prototype generations.
-2. Phase 4: approve technical target and repository/service boundaries; prove the target with a bounded vertical-slice design.
-3. Phase 5: implement Auth/tenancy/RBAC foundation: Supabase session, protected shell, organization selection, memberships, deny-by-default RLS and policy tests.
-4. Complete remaining Phase 6 production-foundation acceptance work without reopening unrelated prototype cleanup.
-5. Phase 7: Work vertical slice — project/task lifecycle with audit events.
-6. Phase 8: People + Time + reporting production slices.
-7. Resolve OQ-004/OQ-005 before sensitive workforce or Finance implementation; then evaluate Phase 9 advanced modules.
-8. Phase 10 hardening: accessibility, threat model, performance budgets, backups/recovery, observability, incident and launch runbooks.
+1. Phase 4: approve technical target and repository/service boundaries; prove the target with a bounded vertical-slice design.
+2. Phase 5: implement Auth/tenancy/RBAC foundation: Supabase session, protected shell, organization selection, memberships, deny-by-default RLS and policy tests.
+3. Complete remaining Phase 6 production-foundation acceptance work without reopening unrelated prototype cleanup.
+4. Phase 7: Work vertical slice — project/task lifecycle with audit events.
+5. Phase 8: People + Time + reporting production slices.
+6. Resolve OQ-004/OQ-005 before sensitive workforce or Finance implementation; then evaluate Phase 9 advanced modules.
+7. Phase 10 hardening: accessibility, threat model, performance budgets, backups/recovery, observability, incident and launch runbooks.
