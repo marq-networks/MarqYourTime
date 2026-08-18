@@ -1,15 +1,25 @@
 # WORKOS CONSTITUTION — CROSS-OS DATA SPINE v1
 
-**Status:** `IMMUTABLE CONTRACT`  
+**Status:** `HISTORICAL PROTOTYPE CONTRACT`
 **Version:** 1.0.0  
 **Last Updated:** 2026-01-07  
 **Authority:** Constitutional Foundation Layer
+
+> **Precedence note (2026-08-18):** The approved Phase 2 spine in
+> `WORK_OS_DECISIONS.md` supersedes incompatible requirements below. For the
+> first release, Platform/Tenancy precedes People, Work, and Time; Reporting is
+> derived/read-only; Security & Audit is cross-cutting; and Finance, payroll,
+> fines, surveillance/productivity records, and advanced Communication have no
+> production entity model. The detailed legacy relationships remain only as
+> deferred prototype evidence and must not drive migrations or services.
 
 ---
 
 ## OBJECTIVE
 
-Define the **permanent data relationships** between core OS domains.
+Record the prototype data relationships between core OS domains for later
+reconciliation. Only relationships repeated in the approved Phase 2 baseline
+are current first-release architecture.
 
 **Scope Exclusions:**
 - ❌ NO UI changes

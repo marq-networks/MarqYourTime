@@ -2,6 +2,11 @@
 
 Only questions that block product or irreversible architecture belong here. Recommendations are provisional until explicitly resolved.
 
+Phase 1 + 2 repository verification on 2026-08-18 found no contradiction that
+reopens OQ-001, OQ-002, or OQ-003. OQ-004 and OQ-005 remain deferred; legacy
+prototype screens, navigation, types, and documents are evidence to reconcile
+later, not approved policy.
+
 ## Resolved founder decisions
 
 ### OQ-001 — Initial product boundary — RESOLVED 2026-08-18
