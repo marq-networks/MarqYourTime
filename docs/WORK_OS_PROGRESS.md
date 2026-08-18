@@ -1,20 +1,13 @@
 # Work OS Progress
 
 **Last updated:** 2026-08-19
-**Current checkpoint:** Phase 4 Technical Architecture decision packet is ready for founder review. Phase 4 is not complete and Phase 5 remains blocked.
+**Current checkpoint:** Phase 4 Technical Architecture is founder-approved and COMPLETE. Phase 5 Database / Security / RBAC is now the current roadmap phase.
 
 ## Phase 1 + 2 final verification — 2026-08-18
 - **Verdict:** VERIFIED / COMPLETE; no product blocker found.
-- Launch role identifiers are consistently `employee`, `org_admin`, and
-  `platform_admin` in the canonical manifest, role configuration, route
-  registry, state, and service types.
-- The approved first-release boundary and domain spine are internally
-  consistent. Older constitution/data-spine claims about five roles, Finance,
-  payroll, fines, monitoring, and advanced Communication/Analytics were
-  classified as documentation corrections and marked historical/deferred.
-- Shared prototype paths can occur in multiple role groups. Role-aware
-  manifest lookup now disambiguates those entries and repairs the navigation
-  invariant without consolidating or deleting routes.
+- Launch role identifiers are consistently `employee`, `org_admin`, and `platform_admin` in the canonical manifest, role configuration, route registry, state, and service types.
+- The approved first-release boundary and domain spine are internally consistent. Older constitution/data-spine claims about five roles, Finance, payroll, fines, monitoring, and advanced Communication/Analytics were classified as documentation corrections and marked historical/deferred.
+- Shared prototype paths can occur in multiple role groups. Role-aware manifest lookup now disambiguates those entries and repairs the navigation invariant without consolidating or deleting routes.
 
 ### Architecture mismatch disposition
 | Finding | Classification | Disposition |
@@ -23,7 +16,7 @@
 | Prototype service types/contracts include Finance, fines, payroll, monitoring, leave and Communication models. | FUTURE PHASE ISSUE | Treat as mock/prototype only; do not use as the production entity model. |
 | Historical constitution defines Owner/Manager and launch-complete advanced modules. | DOCUMENTATION CORRECTION | Marked historical and subordinate to approved decisions. |
 | Historical data spine omits Platform/Tenancy at its root and mandates Finance/fine/payroll flows. | DOCUMENTATION CORRECTION | Marked historical and superseded where incompatible. |
-| `Employee` prototype records conflate identity/profile/employment concerns and `Organization` does not encode approved Tenant membership. | PHASE 5 ISSUE | Split only during approved production schema/Auth/RLS design. |
+| `Employee` prototype records conflate identity/profile/employment concerns and `Organization` does not encode approved Tenant membership. | PHASE 5 ISSUE | Split during approved production schema/Auth/RLS design. |
 | Shared manifest paths previously resolved to the first role-specific duplicate. | SAFE FIX | Added optional role-aware lookup and regression coverage. |
 
 ### First-release consistency matrix
@@ -42,52 +35,61 @@
 - Durable repository guidance and roadmap/decision/progress/open-question memory.
 - Phase 1 Product Foundation approved and verified.
 - Phase 2 Domain / Product Architecture approved and verified.
-- Phase 3 Canonical UX & Screen Consolidation approved on 2026-08-19:
-  - Employee launch navigation = Work, Time, My Profile;
-  - Org Admin launch navigation = Dashboard, People, Work, Time, Essential Reports, Audit, Organization Settings;
-  - Platform Admin launch navigation = Support Console, Organizations, Global Audit;
-  - canonical route/screen matrix approved;
-  - richer legacy People/Department/Work capabilities must be merged before retirement where required;
-  - deferred/diagnostic route families remain outside launch navigation;
-  - redirects/retirement require parity and route tests and were not destructively executed during Phase 3.
+- Phase 3 Canonical UX & Screen Consolidation approved on 2026-08-19.
+- Phase 4 Technical Architecture approved on 2026-08-19:
+  - UI -> domain hook/use-case -> framework-free repository contract -> selected adapter is the locked dependency direction;
+  - the existing single browser-safe Supabase client is the ordinary RLS-protected browser adapter foundation;
+  - privileged membership/role, cross-tenant, identity-admin and secret-bearing operations require trusted server/Edge boundaries;
+  - Auth context owns session identity; Organization context owns validated memberships and active organization selection;
+  - persisted organization IDs are untrusted preferences and must be revalidated;
+  - authoritative domain records are server state, not long-lived browser storage;
+  - validation and structured `AppError` boundaries are required for production I/O;
+  - security-relevant audit generation must use trusted context and be atomic with protected mutations;
+  - mock-to-production migration occurs incrementally behind stable contracts;
+  - People Directory proof remains design-only until Phase 5 provides identity/membership scope and schema/RLS foundations.
 - Early Phase 6 work already completed out of sequence: strict TypeScript/ESLint/Vitest/CI harness plus one bounded shared UI-contract remediation slice.
 
 ## Known technical state
-- `npm run build` and `git diff --check` passed after Phase 3 preparation.
+- `npm run test`, `npm run build`, and `git diff --check` passed for the Phase 4 packet run.
 - Latest recorded strict typecheck after the bounded Phase 6 remediation: 334 errors across 119 prototype files; generic cleanup remains intentionally paused.
 - Latest recorded lint baseline: 31 errors and 51 warnings in existing prototype files.
 - Navigation suite passes all eight Phase 3 tests.
-- Current auth/session/role selection remains prototype-only and client-controlled.
+- Current auth/session/role selection remains prototype-only and client-controlled until Phase 5 replaces it with authenticated membership context.
 - Current service provider remains mock/in-memory with scattered local/session storage and embedded data.
 - `navRegistry.ts` contains 178 unique registered paths with repeated prototype generations retained as migration inventory.
 
-## Current phase — Phase 4 Technical Architecture
-Goal: verify and approve the production technical target and the boundaries that Phase 5 will implement. Phase 4 must define repository/service boundaries, client/server responsibility, server-state and I/O validation rules, error/diagnostic boundaries, privileged-operation handling, mock-to-production migration seams, and a bounded vertical-slice proof design.
+## Phase 4 approval — 2026-08-19
+- PR #7 / merge commit `c28f960cdb8ec704c746827a8fcdf81e57705884` placed the Phase 4 packet on GitHub main.
+- Founder accepted the recommended architecture and requested progression to the next roadmap phase.
+- **Status:** PHASE 4 — VERIFIED / COMPLETE.
 
-### Phase 4 guardrails
-- Do not implement production Supabase schema, migrations, RLS/RBAC, or authentication flows in Phase 4.
-- Do not reopen Phase 1–3 product/UX decisions.
-- Do not perform generic TypeScript cleanup or destructive legacy-route retirement.
-- Find and debug only clear technical-boundary defects needed to make the architecture decision packet trustworthy.
-- Phase 4 becomes COMPLETE only after founder approval of its decision packet.
+## Current phase — Phase 5 Database / Security / RBAC
+Goal: implement the approved production security/data foundation without expanding product scope.
 
-### Phase 4 verification — 2026-08-18
-- Created the single durable decision packet at `WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md`.
-- Verified that the sole Supabase client is foundation-only and uses the browser-safe URL/publishable-key contract; current canonical data remains mock, in-memory, or local-storage backed.
-- Traced People, Work, Time, Reporting, and Audit. People bypasses the service boundary; Work has duplicate unsynchronized stores; Time is the closest existing hook/service seam; reporting/audit are non-authoritative mock projections.
-- Locked layer/import rules, Auth and organization contexts, server versus UI state, structured errors, validation, privileged-operation placement, atomic audit behavior, security invariants, and the mock migration sequence.
-- Kept the People Directory proof design-only: its canonical screen and current service have incompatible models/persistence, so a forced implementation would exceed a trustworthy bounded seam.
-- No production schema, migration, Auth, RLS, RBAC, Supabase business query, or Phase 7 feature was implemented.
-- **Status:** PHASE 4 — DECISION PACKET READY; founder approval required.
+### Phase 5 allowed scope
+- Supabase Auth session integration and protected shell.
+- Tenant + Organization/Workspace production model.
+- Explicit backend memberships for Employee, Org Admin and Platform Admin.
+- Validated active-organization selection/context.
+- Production schema foundation needed for the approved first-release dependency spine.
+- Deny-by-default RLS and policy tests.
+- Trusted server/Edge boundaries for privileged membership/role and cross-tenant actions.
+- Trusted audit foundations needed for security-relevant mutations.
+
+### Phase 5 hard exclusions
+- No Finance/payroll/fines/surveillance/productivity schema.
+- No advanced Communication/Analytics/Integrations expansion.
+- No broad prototype cleanup.
+- No destructive legacy-route retirement unrelated to the security foundation.
+- Do not treat route visibility or browser-selected role/org IDs as authorization.
 
 ## Next execution order
-1. Phase 4: technical architecture verification, decision packet, and founder approval.
-2. Phase 5: production Auth/Tenancy/RBAC schema, Supabase session foundation, RLS and policy tests.
-3. Finish remaining Phase 6 acceptance work.
-4. Phase 7 Core Work Engine.
-5. Phase 8 People + Time + Reporting.
-6. Resolve OQ-004/OQ-005 before Phase 9 sensitive/Finance advanced modules.
-7. Phase 10 hardening and launch.
+1. Phase 5: production Auth/Tenancy/RBAC schema, Supabase session foundation, deny-by-default RLS and policy tests.
+2. Finish remaining Phase 6 acceptance work.
+3. Phase 7 Core Work Engine.
+4. Phase 8 People + Time + Reporting.
+5. Resolve OQ-004/OQ-005 before Phase 9 sensitive/Finance advanced modules.
+6. Phase 10 hardening and launch.
 
 ## Stop rule
-Do not begin Phase 5 implementation until Phase 4 is founder-approved and COMPLETE.
+Remain inside Phase 5 until its schema/security acceptance gates are proven. Do not skip to Phase 7 feature implementation or reopen generic TypeScript cleanup.
