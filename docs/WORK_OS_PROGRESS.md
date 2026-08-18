@@ -1,7 +1,7 @@
 # Work OS Progress
 
 **Last updated:** 2026-08-18
-**Current checkpoint:** Phases 1 and 2 are founder-approved and formally closed. Phase 3 Canonical UX & Screen Consolidation is now the current roadmap phase.
+**Current checkpoint:** PHASE 3 — DECISION PACKET READY. Phases 1 and 2 remain founder-approved and closed; founder review is the next action.
 
 ## Phase 1 + 2 final verification — 2026-08-18
 - **Verdict:** VERIFIED / COMPLETE; no product blocker found.
@@ -56,13 +56,24 @@
 - `npm run build` and `git diff --check` passed after the Phase 6 Slice 2 work.
 - Latest recorded strict typecheck after that bounded remediation: 334 errors across 119 prototype files; further generic cleanup is intentionally paused until the roadmap reaches the appropriate production-foundation work.
 - Latest verification lint result: 31 errors and 51 warnings, all in existing
-  prototype files; the navigation suite now passes all four tests.
+  prototype files; the navigation suite now passes all eight tests.
 - Current auth/session/role selection remains prototype-only and client-controlled.
 - Current service provider remains mock/in-memory with scattered local/session storage and embedded data.
 - `navRegistry.ts` contains 178 unique registered paths with repeated prototype generations.
 
 ## Current phase — Phase 3
 Goal: approve canonical first-release routes/screens for Employee, Org Admin, and Platform Admin surfaces using only the approved first-release scope. Preserve deferred/legacy screens until safe redirects/retirement are proven; do not perform destructive consolidation before approval and route tests.
+
+### Decision packet ready — 2026-08-18
+- `WORK_OS_PHASE_3_CANONICAL_UX.md` records the complete launch capability
+  matrix, role navigation, deferred route families, feature-parity safeguards,
+  and redirect/retirement plan.
+- Visible navigation now contains only first-release candidates. The full
+  178-route registry and all prototype screens remain intact for direct-route
+  comparison; no redirect or destructive consolidation was performed.
+- Navigation tests enforce registry/role alignment and exclusion of deferred
+  and diagnostic families from visible launch navigation.
+- Founder approval is still required; Phase 3 is not VERIFIED / COMPLETE.
 
 ## Next execution order
 1. Phase 3: canonical route/screen decisions and redirect/retirement plan.

@@ -9,7 +9,7 @@ This roadmap reports evidence, not aspirational completion. Phase 0 and cloud Tr
 | 0. Audit | COMPLETE | Prior repository/product audit exists. |
 | 1. Product Foundation | COMPLETE | Founder approved first-release scope, launch surfaces/roles, tenancy direction, and policy exclusions on 2026-08-18. |
 | 2. Domain / Product Architecture | COMPLETE | Founder approved the core domain map, ownership boundaries, dependency order, and first-release entity model on 2026-08-18. |
-| 3. Canonical UX & Screen Consolidation | CURRENT — INVENTORIED | Approve canonical routes/screens for the approved first-release scope, then redirect and retire duplicates with route tests. |
+| 3. Canonical UX & Screen Consolidation | DECISION PACKET READY | Founder review of `WORK_OS_PHASE_3_CANONICAL_UX.md`; after approval, redirect and retire duplicates with route tests. |
 | 4. Technical Architecture | PROPOSED | Approve the target architecture and prove it with one vertical slice. |
 | 5. Database / Security / RBAC | WAITING ON PHASES 3–4 | Approved tenancy and launch roles can now drive schema/RLS design once canonical surfaces and technical target are closed. |
 | 6. Production Foundation | PARTIAL — EARLY WORK DONE | Quality harness and one bounded shared-contract slice exist; remaining acceptance work includes a green/managed quality baseline plus env validation, accessibility/security baselines, and operational error reporting. |
@@ -71,6 +71,11 @@ their visible-navigation and route consolidation is the Phase 3 acceptance
 work, not a Phase 1/2 architecture change.
 
 ## Phase 3 — route/screen matrix
+
+The founder-facing canonical route/screen recommendation, role navigation,
+feature-parity safeguards, and non-destructive retirement plan are ready in
+[`WORK_OS_PHASE_3_CANONICAL_UX.md`](WORK_OS_PHASE_3_CANONICAL_UX.md). Phase 3 is
+not complete until founder approval.
 
 `navRegistry.ts` currently registers 178 unique paths. Prefix totals are: admin 49, org 23, employee 22, finance 17, time 16, super 10, work 9, platform 8, analytics 7, people 4, communication 4, security 4, integrations 3, diagnostics 2. The manifest contains 95 path declarations but only 85 unique paths because shared Work items and two other paths are repeated across role groups.
 
