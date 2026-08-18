@@ -7,51 +7,60 @@ This roadmap reports evidence, not aspirational completion. Phase 0 and cloud Tr
 | Phase | Status | Acceptance gate / next safe outcome |
 |---|---|---|
 | 0. Audit | COMPLETE | Prior repository/product audit exists. |
-| 1. Product Foundation | DECISION PACKET READY | Founder approves user surfaces, product boundary, canonical modules, and policy exclusions. |
-| 2. Domain / Product Architecture | PROPOSED | Founder approves domain map and disputed ownership; entity glossary follows. |
-| 3. Canonical UX & Screen Consolidation | INVENTORIED | Approve canonical routes/screens, then redirect and retire duplicates with route tests. |
-| 4. Technical Architecture | PROPOSED | Approve target below; prove it with one vertical slice. |
-| 5. Database / Security / RBAC | BLOCKED ON POLICY | Approve tenancy, identity, hierarchy, and permission semantics before production business migrations. |
-| 6. Production Foundation | NOT STARTED | CI runs typecheck, lint, tests, build; env validation, accessibility/security baselines, and operational error reporting exist. |
-| 7. Core Work Engine | BLOCKED | Phase 1/5 gates cleared; one project/task workflow persists securely end-to-end. |
-| 8. People + Time + Reporting | BLOCKED | Identity/hierarchy/time policies approved and secured end-to-end. |
-| 9. Advanced Modules | BLOCKED | Finance/communication/integration policy and earlier core dependencies approved. |
+| 1. Product Foundation | COMPLETE | Founder approved first-release scope, launch surfaces/roles, tenancy direction, and policy exclusions on 2026-08-18. |
+| 2. Domain / Product Architecture | COMPLETE | Founder approved the core domain map, ownership boundaries, dependency order, and first-release entity model on 2026-08-18. |
+| 3. Canonical UX & Screen Consolidation | CURRENT — INVENTORIED | Approve canonical routes/screens for the approved first-release scope, then redirect and retire duplicates with route tests. |
+| 4. Technical Architecture | PROPOSED | Approve the target architecture and prove it with one vertical slice. |
+| 5. Database / Security / RBAC | WAITING ON PHASES 3–4 | Approved tenancy and launch roles can now drive schema/RLS design once canonical surfaces and technical target are closed. |
+| 6. Production Foundation | PARTIAL — EARLY WORK DONE | Quality harness and one bounded shared-contract slice exist; remaining acceptance work includes a green/managed quality baseline plus env validation, accessibility/security baselines, and operational error reporting. |
+| 7. Core Work Engine | BLOCKED | Phases 3–6 gates cleared; one project/task workflow persists securely end-to-end. |
+| 8. People + Time + Reporting | BLOCKED | Core identity/hierarchy/time implementation is secured end-to-end. |
+| 9. Advanced Modules | BLOCKED | OQ-004/OQ-005 and other advanced-module policy decisions are approved after core dependencies. |
 | 10. Hardening & Launch | BLOCKED | Threat/performance/accessibility/recovery testing and launch runbooks pass. |
 
-## Phase 1 — product foundation packet
+## Phase 1 — Product Foundation — APPROVED
 
-### VERIFIED FROM REPOSITORY
-- The application is a broad multi-domain workforce operations prototype with employee, organization-admin, and platform-admin surfaces.
-- Strongest repeated workflow spine: People supplies identity/capacity -> Work assigns deliverables -> Time records effort/absence -> Finance consumes approved monetary inputs -> Analytics reads across domains -> Security/Audit governs changes.
-- Capabilities represented by screens/contracts include projects/tasks/milestones, people/departments/roles, time sessions/corrections/leave/fines, expenses/payroll/accounts/reporting, channels/messages, activity analytics, security controls, billing, tenant operations, and integrations.
-- Runtime truth is not production truth: login and roles are browser-controlled; services are predominantly in-memory/mock; many screens use local/session storage or embedded data; Supabase has a client foundation but no domain queries.
-- The breadth and repetition indicate multiple prototype generations, not proof that every represented feature belongs in the launch product.
+### Approved first-release product boundary
+- People Directory
+- Work Execution
+- Time Capture
+- Essential Reporting
+- Audit
 
-### RECOMMENDATION
-- Define the initial product as a tenant-scoped work operations core: People directory + Work execution + Time capture, with reporting and audit as supporting capabilities.
-- Sequence Finance, rich Communication, advanced Analytics, and Platform Administration after the core tenancy/auth/RBAC foundation, except for minimum platform operations needed to onboard and support tenants.
-- Treat payroll, fines, surveillance/productivity measurement, accounting logic, and automated financial decisions as separately gated modules due to policy/compliance risk.
+Deferred from the first release unless separately approved later: Finance, advanced Communication/Analytics, payroll, fines, surveillance/productivity scoring, and similar sensitive/advanced modules.
 
-### FOUNDER DECISION REQUIRED
-See OQ-001 through OQ-005 in `WORK_OS_OPEN_QUESTIONS.md`.
+### Approved launch surfaces / roles
+- Employee
+- Org Admin
+- Platform Admin
 
-## Phase 2 — canonical domain and dependency map
+Owner and Manager remain reserved until their distinct permission semantics are defined. Browser role switching is prototype behavior and must not be treated as authorization.
 
-| Domain | Candidate disposition | Owns | Depends on |
-|---|---|---|---|
-| People | KEEP | worker profile, membership, department references | tenant identity/auth |
-| Work | KEEP; MERGE parallel admin/work generations | project, task, milestone, assignment | People; optionally Time |
-| Time | KEEP | time entries, sessions, leave requests | People; Work link optional |
-| Finance | DECISION REQUIRED; MERGE three route families if retained | expenses/accounts/approved money events | People, Time, Work |
-| Communication | DECISION REQUIRED | channels/messages | People; optional Work links |
-| Analytics | KEEP as read-only projection | derived reports, no source records | all approved domains |
-| Security & Compliance | KEEP cross-cutting | audit/policy/consent metadata | identity and all mutations |
-| Platform | KEEP minimum tenant operations; advanced scope gated | organizations, plans, system operations | auth/tenancy |
-| Integrations | LEGACY until connector scope approved | connection configuration | domain APIs, secrets server-side |
+### Approved tenancy direction
+One tenant may contain one or more organizations/workspaces. Membership is explicit and production access must enforce tenant/organization boundaries server-side with RLS.
 
-Shared entity candidates: Organization/Tenant, User/Auth Identity, Membership, Worker Profile, Department, Project, Task, Assignment, Time Entry, Leave Request, Money Event, Conversation, Audit Event. Names and relationships are proposals, not schema approval.
+## Phase 2 — Domain / Product Architecture — APPROVED
 
-Dependency order: tenancy + identity -> People membership -> Work -> Time -> Finance -> Analytics. Audit spans every mutation; Communication and Integrations attach only through stable IDs.
+### First-release domain dependency spine
+Platform/Tenancy -> People -> Work -> Time -> Reporting/Analytics, with Security & Audit cross-cutting.
+
+### Approved domain ownership
+| Domain | First-release disposition | Owns / responsibility |
+|---|---|---|
+| Platform / Tenancy | KEEP minimum operations | tenants, organizations/workspaces, memberships, minimum customer administration |
+| People | KEEP | worker profiles, organization membership references, departments |
+| Work | KEEP | projects, tasks, milestones, assignments |
+| Time | KEEP | time entries and work sessions; sensitive workforce logic remains gated |
+| Reporting / Analytics | KEEP as read-only projection | derived reports; no duplicate source records |
+| Security & Audit | KEEP cross-cutting | authorization enforcement support, audit events, policy metadata |
+| Finance | DEFER first-release production schema | advanced-module decision later under OQ-005 |
+| Communication | DEFER advanced production scope | advanced-module decision later |
+| Integrations | DEFER | attach only after stable domain APIs/IDs exist |
+
+### Approved first-release core entities
+Tenant, Organization/Workspace, User Identity, Membership, Worker Profile, Department, Project, Task, Milestone, Assignment, Time Entry, Work Session, Audit Event.
+
+Reporting is derived rather than a source of truth. Finance, payroll, fines, surveillance/productivity records, and advanced Communication entities are not part of the first-release production entity model.
 
 ## Phase 3 — route/screen matrix
 
@@ -61,17 +70,19 @@ Dependency order: tenancy + identity -> People membership -> Work -> Time -> Fin
 |---|---|---|
 | `/work/*` | Dedicated v2 Work screens plus older `/admin/*` Work screens | KEEP `/work/*`; MERGE old generation after workflow comparison |
 | `/people/*` | Four domain routes plus `/admin/*` equivalents/enhanced variants | KEEP domain routes; MERGE enhanced/legacy only after feature parity review |
-| `/time/*` and `/employee/*` | Domain admin routes and employee personal routes | KEEP both scopes; normalize naming after policy approval |
-| `/finance/*`, `/org/finance/*`, employee money | Three overlapping generations/surfaces | DECISION REQUIRED; no deletion |
-| `/communication/*`, employee/admin communicate | Shared and role-specific generations | DECISION REQUIRED; no deletion |
-| `/analytics`, `/security`, `/integrations` plus `/admin` aliases | Repeated admin aliases | Prefer domain routes; retain aliases until redirects and access tests exist |
-| `/super/*` and `/platform/*` | Platform-admin and org/platform settings overlap | MERGE only after tenancy responsibility is approved |
+| `/time/*` and `/employee/*` | Domain admin routes and employee personal routes | KEEP both scopes; normalize naming under the approved Employee/Org Admin surface model |
+| `/finance/*`, `/org/finance/*`, employee money | Three overlapping generations/surfaces | OUT OF FIRST-RELEASE CANONICAL NAV; no destructive deletion until OQ-005 |
+| `/communication/*`, employee/admin communicate | Shared and role-specific generations | ADVANCED/DEFERRED; no destructive deletion yet |
+| `/analytics`, `/security`, `/integrations` plus `/admin` aliases | Repeated admin aliases | Keep essential reporting/audit routes; integrations deferred; retain aliases until redirects/access tests exist |
+| `/super/*` and `/platform/*` | Platform-admin and org/platform settings overlap | Canonicalize minimum Platform Admin tenant operations under approved tenancy model |
 | `/diagnostics/*` | Development diagnostics registered at runtime | LEGACY; exclude from production navigation/build exposure after verification |
 
 ## Phases 4–10 — execution slices
-1. Production harness: TypeScript config/typecheck, lint, unit/component smoke tests, and CI build.
-2. Auth/tenancy proof: Supabase session, protected shell, organization selection, deny-by-default RLS test—after OQ-002/OQ-003.
-3. People read slice: one tenant-scoped directory query with loading/error/empty states.
-4. Work vertical slice: project/task lifecycle with audit events.
-5. Time slice, then reporting projections; only then evaluate gated advanced modules.
-6. Hardening: accessibility, threat model, performance budgets, backups/recovery, observability, incident and launch runbooks.
+1. Phase 3: approve canonical first-release screens/routes and a safe redirect/retirement plan for duplicate prototype generations.
+2. Phase 4: approve technical target and repository/service boundaries; prove the target with a bounded vertical-slice design.
+3. Phase 5: implement Auth/tenancy/RBAC foundation: Supabase session, protected shell, organization selection, memberships, deny-by-default RLS and policy tests.
+4. Complete remaining Phase 6 production-foundation acceptance work without reopening unrelated prototype cleanup.
+5. Phase 7: Work vertical slice — project/task lifecycle with audit events.
+6. Phase 8: People + Time + reporting production slices.
+7. Resolve OQ-004/OQ-005 before sensitive workforce or Finance implementation; then evaluate Phase 9 advanced modules.
+8. Phase 10 hardening: accessibility, threat model, performance budgets, backups/recovery, observability, incident and launch runbooks.
