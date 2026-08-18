@@ -10,7 +10,7 @@ This roadmap reports evidence, not aspirational completion. Phase 0 and cloud Tr
 | 1. Product Foundation | COMPLETE | Founder approved first-release scope, launch surfaces/roles, tenancy direction, and policy exclusions on 2026-08-18. |
 | 2. Domain / Product Architecture | COMPLETE | Founder approved the core domain map, ownership boundaries, dependency order, and first-release entity model on 2026-08-18. |
 | 3. Canonical UX & Screen Consolidation | COMPLETE | Founder approved `WORK_OS_PHASE_3_CANONICAL_UX.md` on 2026-08-19; canonical role navigation, route matrix, merge safeguards, and redirect/retirement plan are locked. |
-| 4. Technical Architecture | CURRENT — PROPOSED | Approve the target architecture, repository/service boundaries, data-flow/security rules, and bounded proof design. |
+| 4. Technical Architecture | DECISION PACKET READY — FOUNDER REVIEW | Review and approve/reject `WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md`; do not begin Phase 5 before approval. |
 | 5. Database / Security / RBAC | WAITING ON PHASE 4 | Approved tenancy, roles and canonical surfaces can drive schema/RLS design once the technical target is closed. |
 | 6. Production Foundation | PARTIAL — EARLY WORK DONE | Quality harness and one bounded shared-contract slice exist; remaining acceptance work includes a green/managed quality baseline plus env validation, accessibility/security baselines, and operational error reporting. |
 | 7. Core Work Engine | BLOCKED | Phases 4–6 gates cleared; one project/task workflow persists securely end-to-end. |
@@ -94,6 +94,8 @@ Cross-cutting: error boundary, structured diagnostics, audit events, accessibili
 ```
 
 Phase 4 acceptance requires an approved technical boundary map, state/data-flow rules, error and validation boundaries, privileged-operation boundary, migration strategy from mock services, and a bounded vertical-slice proof design. Do not implement the Phase 5 production schema in Phase 4.
+
+The verified decision packet is now recorded in [`WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md`](WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md). It recommends the target with explicit browser/server, Auth/organization, state, validation, error, audit, and migration boundaries. The bounded People proof remains design-only because the canonical screen and current People service use incompatible models and persistence; forcing a seam would certify the wrong boundary. Founder approval remains the Phase 4 acceptance gate.
 
 ## Phases 4–10 — execution slices
 1. Phase 4: approve technical target and repository/service boundaries; prove the target with a bounded vertical-slice design.
