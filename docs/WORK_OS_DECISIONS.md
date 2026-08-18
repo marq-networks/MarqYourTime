@@ -24,6 +24,7 @@ Statuses: **APPROVED** means supported by an explicit repository/founder decisio
 | D-102 | PROPOSED | Keep three initial application surfaces: employee, organization administration, platform administration. | This now aligns with approved launch roles in D-008; exact route/screen canonicalization remains Phase 3 work. |
 | D-103 | PROPOSED | Canonicalize domain URLs (`/work`, `/people`, etc.) over generation-based `/admin` aliases, using redirects during migration. | Removes route ambiguity without deleting screens; requires Phase 3 approval of the route matrix first. |
 | D-104 | PROPOSED | Use one server-state/query boundary and schema validation at all I/O boundaries; keep ephemeral UI state local. | Exact libraries should be selected only when implementing the first production vertical slice. |
+| D-105 | PROPOSED | Approve the Phase 3 canonical role navigation and route matrix in `WORK_OS_PHASE_3_CANONICAL_UX.md`. | Visible launch navigation is limited to approved scope; legacy and deferred routes remain registered until approval, parity merges, redirects, and route tests. |
 
 ## Technical target
 
