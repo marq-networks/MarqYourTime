@@ -455,10 +455,17 @@ export function getPathsForRole(role: Role): string[] {
   return paths;
 }
 
-export function findNavItemByPath(path: string): NavItem | null {
+/**
+ * Find a manifest entry for a path, optionally for a specific role.
+ *
+ * Prototype generations intentionally repeat a few shared paths in separate
+ * role groups. Callers validating role access must therefore disambiguate by
+ * role rather than assuming that the first matching entry is canonical.
+ */
+export function findNavItemByPath(path: string, role?: Role): NavItem | null {
   function search(items: NavItem[]): NavItem | null {
     for (const item of items) {
-      if (item.path === path) return item;
+      if (item.path === path && (!role || item.roles.includes(role))) return item;
       if (item.children) {
         const found = search(item.children);
         if (found) return found;

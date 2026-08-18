@@ -62,6 +62,14 @@ Tenant, Organization/Workspace, User Identity, Membership, Worker Profile, Depar
 
 Reporting is derived rather than a source of truth. Finance, payroll, fines, surveillance/productivity records, and advanced Communication entities are not part of the first-release production entity model.
 
+### Phase 1 + 2 verification record (2026-08-18)
+Repository reconciliation confirmed the approved three role identifiers and
+the domain dependency/ownership baseline. Historical prototype documents have
+been explicitly subordinated to the approved decisions. Deferred routes and
+contracts remain present as prototype inventory, but are not launch scope;
+their visible-navigation and route consolidation is the Phase 3 acceptance
+work, not a Phase 1/2 architecture change.
+
 ## Phase 3 — route/screen matrix
 
 `navRegistry.ts` currently registers 178 unique paths. Prefix totals are: admin 49, org 23, employee 22, finance 17, time 16, super 10, work 9, platform 8, analytics 7, people 4, communication 4, security 4, integrations 3, diagnostics 2. The manifest contains 95 path declarations but only 85 unique paths because shared Work items and two other paths are repeated across role groups.

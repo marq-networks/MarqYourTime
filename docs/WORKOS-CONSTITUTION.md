@@ -1,7 +1,14 @@
 # WORKOS CONSTITUTION
 
+> **Historical prototype specification.** The approved product and domain
+> baseline in `WORK_OS_DECISIONS.md` takes precedence wherever this document
+> describes five roles, Owner/Manager authorization, or Finance, payroll,
+> fines, surveillance, productivity scoring, or advanced Communication and
+> Analytics as launch requirements. Those sections remain as prototype
+> inventory for later review; they are not first-release policy.
+
 **Version:** 1.0  
-**Status:** Canonical Source of Truth  
+**Status:** Historical Prototype Specification
 **Last Updated:** January 7, 2026  
 
 ---
@@ -10,7 +17,7 @@
 
 This document establishes the foundational architecture, rules, and invariants for the WorkOS multi-organization workforce operating system. All design decisions, module implementations, and integrations MUST comply with this constitution.
 
-**Authority:** This document supersedes all conflicting implementation decisions.  
+**Authority:** Superseded by approved entries in `WORK_OS_DECISIONS.md` where incompatible.
 **Immutability:** Changes require explicit constitutional amendment.  
 **Enforcement:** Violations trigger immediate refactoring.
 

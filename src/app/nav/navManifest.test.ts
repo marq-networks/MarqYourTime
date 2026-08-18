@@ -22,7 +22,7 @@ describe('navigation manifest invariants', () => {
 
   it.each(roles)('returns only paths assigned to %s', (role) => {
     for (const path of getPathsForRole(role)) {
-      expect(findNavItemByPath(path)?.roles).toContain(role);
+      expect(findNavItemByPath(path, role)?.roles).toContain(role);
     }
   });
 });
