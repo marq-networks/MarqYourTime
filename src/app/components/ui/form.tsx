@@ -2,7 +2,7 @@ import React from 'react';
 
 interface FormFieldProps {
   label: string;
-  name: string;
+  name?: string;
   required?: boolean;
   error?: string;
   helperText?: string;
@@ -66,10 +66,10 @@ export function TextArea({ error, className = '', ...props }: TextAreaProps) {
 
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   error?: boolean;
-  options: { value: string; label: string }[];
+  options?: { value: string; label: string }[];
 }
 
-export function Select({ error, options, className = '', ...props }: SelectProps) {
+export function Select({ error, options, className = '', children, ...props }: SelectProps) {
   return (
     <select
       className={`w-full px-3 py-2 rounded-md border ${
@@ -79,11 +79,12 @@ export function Select({ error, options, className = '', ...props }: SelectProps
       } bg-background focus:outline-none focus:ring-2 focus:ring-offset-0 transition-colors ${className}`}
       {...props}
     >
-      {options.map(option => (
+      {options?.map(option => (
         <option key={option.value} value={option.value}>
           {option.label}
         </option>
       ))}
+      {children}
     </select>
   );
 }

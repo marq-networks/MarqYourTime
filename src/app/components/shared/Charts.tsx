@@ -21,10 +21,18 @@ interface ChartProps {
   height?: number;
 }
 
+interface ChartSeries {
+  dataKey: string;
+  name?: string;
+  color?: string;
+}
+
 // Line Chart
 interface LineChartComponentProps extends ChartProps {
-  dataKey: string;
-  xAxisKey: string;
+  dataKey?: string;
+  xAxisKey?: string;
+  xKey?: string;
+  lines?: ChartSeries[];
   color?: string;
 }
 
@@ -32,6 +40,8 @@ export function LineChartComponent({
   data, 
   dataKey, 
   xAxisKey, 
+  xKey,
+  lines,
   height = 300,
   color = 'hsl(var(--chart-1))' 
 }: LineChartComponentProps) {
@@ -40,7 +50,7 @@ export function LineChartComponent({
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
         <XAxis 
-          dataKey={xAxisKey} 
+          dataKey={xAxisKey ?? xKey}
           stroke="hsl(var(--muted-foreground))"
           style={{ fontSize: '12px' }}
         />
@@ -56,13 +66,20 @@ export function LineChartComponent({
           }}
         />
         <Legend />
-        <Line 
-          type="monotone" 
-          dataKey={dataKey} 
-          stroke={color} 
-          strokeWidth={2}
-          dot={{ fill: color }}
-        />
+        {(lines ?? (dataKey ? [{ dataKey, color }] : [])).map((line) => {
+          const lineColor = line.color ?? color;
+          return (
+            <Line
+              key={line.dataKey}
+              type="monotone"
+              dataKey={line.dataKey}
+              name={line.name}
+              stroke={lineColor}
+              strokeWidth={2}
+              dot={{ fill: lineColor }}
+            />
+          );
+        })}
       </LineChart>
     </ResponsiveContainer>
   );
@@ -70,8 +87,10 @@ export function LineChartComponent({
 
 // Bar Chart
 interface BarChartComponentProps extends ChartProps {
-  dataKey: string;
-  xAxisKey: string;
+  dataKey?: string;
+  xAxisKey?: string;
+  xKey?: string;
+  bars?: ChartSeries[];
   color?: string;
 }
 
@@ -79,6 +98,8 @@ export function BarChartComponent({
   data, 
   dataKey, 
   xAxisKey, 
+  xKey,
+  bars,
   height = 300,
   color = 'hsl(var(--chart-2))' 
 }: BarChartComponentProps) {
@@ -87,7 +108,7 @@ export function BarChartComponent({
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
         <XAxis 
-          dataKey={xAxisKey} 
+          dataKey={xAxisKey ?? xKey}
           stroke="hsl(var(--muted-foreground))"
           style={{ fontSize: '12px' }}
         />
@@ -103,7 +124,15 @@ export function BarChartComponent({
           }}
         />
         <Legend />
-        <Bar dataKey={dataKey} fill={color} radius={[4, 4, 0, 0]} />
+        {(bars ?? (dataKey ? [{ dataKey, color }] : [])).map((bar) => (
+          <Bar
+            key={bar.dataKey}
+            dataKey={bar.dataKey}
+            name={bar.name}
+            fill={bar.color ?? color}
+            radius={[4, 4, 0, 0]}
+          />
+        ))}
       </BarChart>
     </ResponsiveContainer>
   );
@@ -158,8 +187,8 @@ export function AreaChartComponent({
 
 // Donut Chart
 interface DonutChartComponentProps extends ChartProps {
-  dataKey: string;
-  nameKey: string;
+  dataKey?: string;
+  nameKey?: string;
 }
 
 const COLORS = [
@@ -172,8 +201,8 @@ const COLORS = [
 
 export function DonutChartComponent({ 
   data, 
-  dataKey, 
-  nameKey, 
+  dataKey = 'value',
+  nameKey = 'name',
   height = 300 
 }: DonutChartComponentProps) {
   return (
