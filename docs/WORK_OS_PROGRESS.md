@@ -97,7 +97,8 @@ Remain inside Phase 5 until its schema/security acceptance gates are proven. Do 
 ## Phase 5 repository implementation — 2026-08-18
 - Added Supabase Auth session lifecycle, membership-derived Organization context, and protected-shell state flow.
 - Added a forward-only Tenant/Organization/Membership/People dependency/Audit migration with forced deny-by-default RLS and backend-derived role predicates.
-- Added a trusted-server-only atomic membership/audit database function, Edge contract scaffolding, and ten-case pgTAP policy coverage.
+- Added a trusted-server-only atomic membership/audit database function, Edge contract scaffolding, and thirteen-case pgTAP policy coverage.
 - Removed prototype session/selected-role/mock-organization authority from application composition; route/navigation roles remain presentation only.
 - Completed the bounded security findings record in `WORK_OS_PHASE_5_SECURITY_DATABASE.md`.
+- Corrected reviewer-found Phase 5 issues before remote verification: current-user membership loading now selects by authenticated user even for globally-readable Platform Admin sessions, Protected Shell requires a validated active membership, and browser employees cannot mutate authoritative worker job-title or department assignments. Regression coverage includes the selection boundary and corrected pgTAP privilege/worker-field cases.
 - **Remote database status: NOT APPLIED.** Founder review, local Supabase policy execution, remote apply, real-JWT RLS verification, and bootstrap are the next gate. Phase 5 is not COMPLETE.

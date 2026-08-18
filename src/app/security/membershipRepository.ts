@@ -9,11 +9,15 @@ interface MembershipRow {
   organizations: { name: string; slug: string } | { name: string; slug: string }[];
 }
 
-/** Reads only rows already authorized by RLS; request filters are never authorization proof. */
-export async function listCurrentMemberships(): Promise<ValidatedMembership[]> {
+/**
+ * Selects the signed-in user's rows from those authorized by RLS. The user_id filter limits the
+ * result set for current-user context; it is selection only and is never authorization proof.
+ */
+export async function listCurrentMemberships(userId: string): Promise<ValidatedMembership[]> {
   const { data, error } = await supabase
     .from('memberships')
     .select('id, tenant_id, organization_id, role, organizations!inner(name, slug)')
+    .eq('user_id', userId)
     .eq('status', 'active')
     .is('deleted_at', null)
     .order('created_at');

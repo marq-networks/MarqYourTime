@@ -36,7 +36,7 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     setActiveMembership(null); // Never render stale organization data while revalidating.
     try {
-      const valid = await listCurrentMemberships();
+      const valid = await listCurrentMemberships(user.id);
       const preference = localStorage.getItem(PREFERENCE_KEY);
       const selected = valid.find((item) => item.organizationId === preference) ?? valid[0] ?? null;
       setMemberships(valid);
@@ -55,10 +55,11 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
   useEffect(() => { void refresh(); }, [refresh]);
 
   const switchOrganization = useCallback(async (organizationId: string) => {
+    if (!user) throw new Error('Organization access requires an authenticated user.');
     setSwitching(true);
     setActiveMembership(null);
     try {
-      const valid = await listCurrentMemberships();
+      const valid = await listCurrentMemberships(user.id);
       const selected = valid.find((item) => item.organizationId === organizationId);
       if (!selected) throw new Error('Organization is not available to this account.');
       setMemberships(valid);
@@ -68,7 +69,7 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
     } finally {
       setSwitching(false);
     }
-  }, []);
+  }, [user]);
 
   const value = useMemo(() => ({ loading, switching, memberships, activeMembership,
     activeRole: activeMembership?.role ?? null, error, switchOrganization, refresh }),
