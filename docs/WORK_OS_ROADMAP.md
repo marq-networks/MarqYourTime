@@ -11,7 +11,7 @@ This roadmap reports evidence, not aspirational completion. Phase 0 and cloud Tr
 | 2. Domain / Product Architecture | COMPLETE | Founder approved the core domain map, ownership boundaries, dependency order, and first-release entity model on 2026-08-18. |
 | 3. Canonical UX & Screen Consolidation | COMPLETE | Founder approved `WORK_OS_PHASE_3_CANONICAL_UX.md` on 2026-08-19; canonical role navigation, route matrix, merge safeguards, and redirect/retirement plan are locked. |
 | 4. Technical Architecture | COMPLETE | Founder approved `WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md` on 2026-08-19; layer boundaries, Auth/organization contexts, data/state rules, browser/server split, validation/error model, trusted audit, and mock-migration strategy are locked. |
-| 5. Database / Security / RBAC | CURRENT — READY TO IMPLEMENT | Implement the approved Auth/tenancy/membership foundation, production schema base, deny-by-default RLS, launch-role enforcement, policy tests, and trusted audit foundations without expanding product scope. |
+| 5. Database / Security / RBAC | IMPLEMENTATION READY FOR REMOTE VERIFICATION | Implement the approved Auth/tenancy/membership foundation, production schema base, deny-by-default RLS, launch-role enforcement, policy tests, and trusted audit foundations without expanding product scope. |
 | 6. Production Foundation | PARTIAL — EARLY WORK DONE | Quality harness and one bounded shared-contract slice exist; remaining acceptance work includes a green/managed quality baseline plus env validation, accessibility/security baselines, and operational error reporting. |
 | 7. Core Work Engine | BLOCKED | Phases 5–6 gates cleared; one project/task workflow persists securely end-to-end. |
 | 8. People + Time + Reporting | BLOCKED | Core identity/hierarchy/time implementation is secured end-to-end. |
@@ -105,9 +105,9 @@ Locked rules include:
 
 The People Directory architecture proof remains intentionally design-only until Phase 5 establishes identity/membership scope and schema/RLS foundations.
 
-## Phase 5 — Database / Security / RBAC — CURRENT
+## Phase 5 — Database / Security / RBAC — IMPLEMENTATION READY FOR REMOTE VERIFICATION
 
-Phase 5 may now implement only the approved first-release security/data foundation:
+Phase 5 repository implementation now provides the approved first-release security/data foundation:
 - Supabase Auth session integration and protected shell;
 - Tenant and Organization/Workspace production model;
 - explicit memberships for Employee, Org Admin and Platform Admin;
@@ -126,3 +126,7 @@ Phase 5 must not add Finance, payroll, fines, surveillance/productivity, advance
 4. Phase 8: People + Time + reporting production slices.
 5. Resolve OQ-004/OQ-005 before sensitive workforce or Finance implementation; then evaluate Phase 9 advanced modules.
 6. Phase 10 hardening: accessibility, threat model, performance budgets, backups/recovery, observability, incident and launch runbooks.
+
+### Phase 5 verification gate (2026-08-18)
+
+The reviewed repository artifacts include Supabase Auth/session and protected-shell composition, validated membership-derived organization context, the forward-only production foundation migration, forced deny-by-default RLS, trusted atomic membership audit mutation, and a ten-case pgTAP policy suite. **Remote Supabase application is NOT APPLIED.** Phase 5 remains pending founder review, remote migration, and real-session security verification; Phase 6 has not begun. See [`WORK_OS_PHASE_5_SECURITY_DATABASE.md`](WORK_OS_PHASE_5_SECURITY_DATABASE.md).

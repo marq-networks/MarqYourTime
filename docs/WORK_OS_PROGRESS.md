@@ -1,7 +1,7 @@
 # Work OS Progress
 
 **Last updated:** 2026-08-19
-**Current checkpoint:** Phase 4 Technical Architecture is founder-approved and COMPLETE. Phase 5 Database / Security / RBAC is now the current roadmap phase.
+**Current checkpoint:** PHASE 5 — IMPLEMENTATION READY FOR REMOTE VERIFICATION. Remote Supabase migration and security verification are NOT APPLIED and remain reviewer-gated.
 
 ## Phase 1 + 2 final verification — 2026-08-18
 - **Verdict:** VERIFIED / COMPLETE; no product blocker found.
@@ -93,3 +93,11 @@ Goal: implement the approved production security/data foundation without expandi
 
 ## Stop rule
 Remain inside Phase 5 until its schema/security acceptance gates are proven. Do not skip to Phase 7 feature implementation or reopen generic TypeScript cleanup.
+
+## Phase 5 repository implementation — 2026-08-18
+- Added Supabase Auth session lifecycle, membership-derived Organization context, and protected-shell state flow.
+- Added a forward-only Tenant/Organization/Membership/People dependency/Audit migration with forced deny-by-default RLS and backend-derived role predicates.
+- Added a trusted-server-only atomic membership/audit database function, Edge contract scaffolding, and ten-case pgTAP policy coverage.
+- Removed prototype session/selected-role/mock-organization authority from application composition; route/navigation roles remain presentation only.
+- Completed the bounded security findings record in `WORK_OS_PHASE_5_SECURITY_DATABASE.md`.
+- **Remote database status: NOT APPLIED.** Founder review, local Supabase policy execution, remote apply, real-JWT RLS verification, and bootstrap are the next gate. Phase 5 is not COMPLETE.

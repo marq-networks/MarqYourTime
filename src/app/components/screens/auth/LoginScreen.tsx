@@ -17,7 +17,7 @@ import {
 export type LoginRole = 'employee' | 'org_admin' | 'platform_admin';
 
 interface LoginScreenProps {
-  onLogin: (role: LoginRole) => void;
+  onLogin: (email: string, password: string) => Promise<void>;
 }
 
 interface RolePortal {
@@ -92,19 +92,14 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   const handleLogin = async () => {
     if (!selectedPortal) return;
 
-    // Validate credentials
-    if (email !== selectedPortal.credentials.email || password !== selectedPortal.credentials.password) {
-      setError('Invalid credentials. Use the credentials shown below.');
-      return;
-    }
-
     setIsLoggingIn(true);
     setError('');
-
-    // Simulate brief login delay
-    await new Promise(resolve => setTimeout(resolve, 600));
-    
-    onLogin(selectedPortal.role);
+    try {
+      await onLogin(email, password);
+    } catch (loginError) {
+      setError(loginError instanceof Error ? loginError.message : 'Sign in failed.');
+      setIsLoggingIn(false);
+    }
   };
 
   const handleBack = () => {
