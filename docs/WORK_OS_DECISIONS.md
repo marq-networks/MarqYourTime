@@ -16,24 +16,26 @@ Statuses: **APPROVED** means supported by an explicit repository/founder decisio
 | D-008 | APPROVED | Launch authorization starts with three backend-assigned roles: Employee, Org Admin, and Platform Admin. Owner and Manager are reserved until their distinct permissions are defined. | Founder approval on 2026-08-18. Browser role switching must never be an authorization boundary. |
 | D-009 | APPROVED | First-release domain architecture is Platform/Tenancy -> People -> Work -> Time -> Reporting/Analytics, with Security & Audit cross-cutting. Core entities are Tenant, Organization/Workspace, User Identity, Membership, Worker Profile, Department, Project, Task, Milestone, Assignment, Time Entry, Work Session, and Audit Event; reporting is derived rather than a duplicate source of truth. | Founder approval on 2026-08-18. Finance and advanced Communication receive no first-release production schema. |
 | D-105 | APPROVED | Use the Phase 3 canonical role navigation and route matrix in `WORK_OS_PHASE_3_CANONICAL_UX.md` as the first-release UX target, with merge-before-retire safeguards and non-destructive redirects/retirement only after route/parity tests. | Founder approval on 2026-08-19. Visible launch navigation is limited to approved scope; legacy and deferred routes remain registered until approved migration work proves safe replacement. |
+| D-106 | APPROVED | Adopt the verified layer, Auth/organization context, structured error, validation, browser/server, atomic audit, and incremental adapter rules in `WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md`. | Founder approval on 2026-08-19. Phase 5 may now implement the approved data/security foundation; the browser remains presentation-only for authorization, privileged work uses trusted server boundaries, and important audit generation must be trusted/atomic. |
 
-## Proposed architecture (review before treating as product policy)
+## Proposed architecture / implementation choices still awaiting proof
 
 | ID | Status | Recommendation | Consequence |
 |---|---|---|---|
-| D-101 | PROPOSED | Adopt Supabase Auth + Postgres + deny-by-default RLS behind typed domain repositories/services, implementing the approved tenant/organization model from D-007. | Screens depend on contracts rather than direct queries; tenant and organization boundaries must be represented explicitly where required. |
-| D-102 | PROPOSED | Keep three initial application surfaces: employee, organization administration, platform administration. | This now aligns with approved launch roles in D-008 and the approved Phase 3 canonical UX. |
-| D-103 | PROPOSED | Canonicalize domain URLs (`/work`, `/people`, etc.) over generation-based `/admin` aliases, using redirects during migration. | Removes route ambiguity without deleting screens; Phase 3 now approves the target route matrix, but redirects still require parity and route tests. |
-| D-104 | PROPOSED | Use one server-state/query boundary and schema validation at all I/O boundaries; keep ephemeral UI state local. | Exact libraries should be selected only when implementing the first production vertical slice. |
-| D-106 | PROPOSED — PHASE 4 PACKET READY | Adopt the verified layer, Auth/organization context, structured error, validation, browser/server, atomic audit, and incremental adapter rules in `WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md`. | Founder approval is required before marking Phase 4 complete or beginning Phase 5; the packet creates no production schema or security implementation. |
+| D-101 | PROPOSED | Adopt Supabase Auth + Postgres + deny-by-default RLS behind typed domain repositories/services, implementing the approved tenant/organization model from D-007 and Phase 4 boundaries. | Phase 5 must prove the schema/policy details with migrations and tests; screens must not depend directly on database implementation. |
+| D-102 | PROPOSED | Keep three initial application surfaces: employee, organization administration, platform administration. | This aligns with approved launch roles and Phase 3 UX; implementation must bind these surfaces to backend-assigned membership roles. |
+| D-103 | PROPOSED | Canonicalize domain URLs (`/work`, `/people`, etc.) over generation-based `/admin` aliases, using redirects during migration. | Phase 3 approved the target route matrix, but redirects still require parity and route tests. |
+| D-104 | PROPOSED | Use one server-state/query boundary and schema validation at all I/O boundaries; keep ephemeral UI state local. | Exact query/cache and runtime schema tooling should be selected only when implementation evidence justifies them; Phase 4 does not require a new library. |
 
 ## Technical target
 
 ```text
 React screens -> domain hooks/use-cases -> typed repository contracts
-             -> Supabase browser client (Auth + RLS-protected data)
-             -> server/Edge Function only for privileged or secret-bearing operations
-Cross-cutting: error boundary, structured diagnostics, audit events, accessibility, CI
+             -> selected mock / Supabase / trusted-server adapter
+             -> Supabase browser client for ordinary RLS-protected data
+             -> server/Edge Function for privileged or secret-bearing operations
+Cross-cutting: Auth context, Organization context, validation, structured errors,
+trusted audit, diagnostics, accessibility, CI
 ```
 
-The product/domain/Phase 3 UX decisions above are approved, but the production business schema itself is not yet implemented. Migrations must be forward-only, reviewed, and paired with RLS policies and policy tests. The frontend must never be the authorization boundary.
+The product/domain/Phase 3/Phase 4 decisions above are approved. Phase 5 may implement the production business/security foundation using forward-only migrations paired with deny-by-default RLS and policy tests. The frontend must never be the authorization boundary.
