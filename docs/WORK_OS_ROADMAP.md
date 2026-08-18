@@ -10,10 +10,10 @@ This roadmap reports evidence, not aspirational completion. Phase 0 and cloud Tr
 | 1. Product Foundation | COMPLETE | Founder approved first-release scope, launch surfaces/roles, tenancy direction, and policy exclusions on 2026-08-18. |
 | 2. Domain / Product Architecture | COMPLETE | Founder approved the core domain map, ownership boundaries, dependency order, and first-release entity model on 2026-08-18. |
 | 3. Canonical UX & Screen Consolidation | COMPLETE | Founder approved `WORK_OS_PHASE_3_CANONICAL_UX.md` on 2026-08-19; canonical role navigation, route matrix, merge safeguards, and redirect/retirement plan are locked. |
-| 4. Technical Architecture | DECISION PACKET READY — FOUNDER REVIEW | Review and approve/reject `WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md`; do not begin Phase 5 before approval. |
-| 5. Database / Security / RBAC | WAITING ON PHASE 4 | Approved tenancy, roles and canonical surfaces can drive schema/RLS design once the technical target is closed. |
+| 4. Technical Architecture | COMPLETE | Founder approved `WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md` on 2026-08-19; layer boundaries, Auth/organization contexts, data/state rules, browser/server split, validation/error model, trusted audit, and mock-migration strategy are locked. |
+| 5. Database / Security / RBAC | CURRENT — READY TO IMPLEMENT | Implement the approved Auth/tenancy/membership foundation, production schema base, deny-by-default RLS, launch-role enforcement, policy tests, and trusted audit foundations without expanding product scope. |
 | 6. Production Foundation | PARTIAL — EARLY WORK DONE | Quality harness and one bounded shared-contract slice exist; remaining acceptance work includes a green/managed quality baseline plus env validation, accessibility/security baselines, and operational error reporting. |
-| 7. Core Work Engine | BLOCKED | Phases 4–6 gates cleared; one project/task workflow persists securely end-to-end. |
+| 7. Core Work Engine | BLOCKED | Phases 5–6 gates cleared; one project/task workflow persists securely end-to-end. |
 | 8. People + Time + Reporting | BLOCKED | Core identity/hierarchy/time implementation is secured end-to-end. |
 | 9. Advanced Modules | BLOCKED | OQ-004/OQ-005 and other advanced-module policy decisions are approved after core dependencies. |
 | 10. Hardening & Launch | BLOCKED | Threat/performance/accessibility/recovery testing and launch runbooks pass. |
@@ -63,11 +63,7 @@ Tenant, Organization/Workspace, User Identity, Membership, Worker Profile, Depar
 Reporting is derived rather than a source of truth. Finance, payroll, fines, surveillance/productivity records, and advanced Communication entities are not part of the first-release production entity model.
 
 ### Phase 1 + 2 verification record (2026-08-18)
-Repository reconciliation confirmed the approved three role identifiers and
-the domain dependency/ownership baseline. Historical prototype documents have
-been explicitly subordinated to the approved decisions. Deferred routes and
-contracts remain present as prototype inventory, but are not launch scope;
-their visible-navigation and route consolidation is governed by the approved Phase 3 plan.
+Repository reconciliation confirmed the approved three role identifiers and the domain dependency/ownership baseline. Historical prototype documents have been explicitly subordinated to the approved decisions. Deferred routes and contracts remain present as prototype inventory, but are not launch scope; their visible-navigation and route consolidation is governed by the approved Phase 3 plan.
 
 ## Phase 3 — Canonical UX & Screen Consolidation — APPROVED
 
@@ -81,27 +77,52 @@ The approved package locks:
 
 All 178 registered prototype routes remain source inventory until later approved migration work proves safe redirects/retirement. Approval of Phase 3 does not itself authorize destructive deletion.
 
-## Phase 4 — Technical Architecture — CURRENT
+## Phase 4 — Technical Architecture — APPROVED
 
-Phase 4 must now verify and close the technical target before Phase 5 schema/Auth/RBAC implementation begins.
-The existing proposed target is:
+Founder approved [`WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md`](WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md) on 2026-08-19.
+
+Approved production target:
 
 ```text
 React screens -> domain hooks/use-cases -> typed repository contracts
-             -> Supabase browser client (Auth + RLS-protected data)
-             -> server/Edge Function only for privileged or secret-bearing operations
-Cross-cutting: error boundary, structured diagnostics, audit events, accessibility, CI
+             -> selected mock / Supabase / trusted-server adapter
+             -> Supabase browser client for ordinary RLS-protected operations
+             -> server/Edge Function for privileged or secret-bearing operations
+Cross-cutting: Auth context, Organization context, validation, structured errors,
+trusted audit, diagnostics, accessibility, CI
 ```
 
-Phase 4 acceptance requires an approved technical boundary map, state/data-flow rules, error and validation boundaries, privileged-operation boundary, migration strategy from mock services, and a bounded vertical-slice proof design. Do not implement the Phase 5 production schema in Phase 4.
+Locked rules include:
+- repository contracts are framework-free and domain-owned;
+- screens do not import Supabase/adapters/database row types directly;
+- Auth context owns session identity; Organization context owns validated memberships and active organization selection;
+- persisted organization IDs are untrusted preferences and must be revalidated;
+- route visibility/browser role selection is presentation only, never authorization;
+- authoritative People/Work/Time/Membership/Reporting/Audit data is server state, not long-lived browser storage;
+- privileged membership/role, cross-tenant, secret-bearing and identity-administration operations require trusted server boundaries;
+- important audit events must be generated through a trusted path and atomically with protected mutations;
+- mock services are replaced incrementally behind stable repository contracts rather than through broad UI rewrites.
 
-The verified decision packet is now recorded in [`WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md`](WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md). It recommends the target with explicit browser/server, Auth/organization, state, validation, error, audit, and migration boundaries. The bounded People proof remains design-only because the canonical screen and current People service use incompatible models and persistence; forcing a seam would certify the wrong boundary. Founder approval remains the Phase 4 acceptance gate.
+The People Directory architecture proof remains intentionally design-only until Phase 5 establishes identity/membership scope and schema/RLS foundations.
 
-## Phases 4–10 — execution slices
-1. Phase 4: approve technical target and repository/service boundaries; prove the target with a bounded vertical-slice design.
-2. Phase 5: implement Auth/tenancy/RBAC foundation: Supabase session, protected shell, organization selection, memberships, deny-by-default RLS and policy tests.
-3. Complete remaining Phase 6 production-foundation acceptance work without reopening unrelated prototype cleanup.
-4. Phase 7: Work vertical slice — project/task lifecycle with audit events.
-5. Phase 8: People + Time + reporting production slices.
-6. Resolve OQ-004/OQ-005 before sensitive workforce or Finance implementation; then evaluate Phase 9 advanced modules.
-7. Phase 10 hardening: accessibility, threat model, performance budgets, backups/recovery, observability, incident and launch runbooks.
+## Phase 5 — Database / Security / RBAC — CURRENT
+
+Phase 5 may now implement only the approved first-release security/data foundation:
+- Supabase Auth session integration and protected shell;
+- Tenant and Organization/Workspace production model;
+- explicit memberships for Employee, Org Admin and Platform Admin;
+- validated active-organization context;
+- first-release schema foundations needed for identity, People, Work, Time and Audit dependencies;
+- deny-by-default RLS and policy tests;
+- trusted boundaries for privileged membership/cross-tenant operations;
+- audit foundations required for security-relevant mutations.
+
+Phase 5 must not add Finance, payroll, fines, surveillance/productivity, advanced Communication, advanced Analytics or other deferred modules. Migrations must be forward-only, reviewed, and paired with access-policy tests. The browser must never be the final authorization boundary.
+
+## Phases 5–10 — execution slices
+1. Phase 5: implement Auth/tenancy/RBAC foundation: Supabase session, protected shell, organization selection, memberships, deny-by-default RLS and policy tests.
+2. Complete remaining Phase 6 production-foundation acceptance work without reopening unrelated prototype cleanup.
+3. Phase 7: Work vertical slice — project/task lifecycle with audit events.
+4. Phase 8: People + Time + reporting production slices.
+5. Resolve OQ-004/OQ-005 before sensitive workforce or Finance implementation; then evaluate Phase 9 advanced modules.
+6. Phase 10 hardening: accessibility, threat model, performance budgets, backups/recovery, observability, incident and launch runbooks.
