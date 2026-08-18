@@ -1,20 +1,22 @@
 # Work OS Phase 3 — Canonical UX decision packet
 
-**Status:** PHASE 3 — DECISION PACKET READY  
+**Status:** PHASE 3 — VERIFIED / COMPLETE  
 **Prepared:** 2026-08-18  
-**Constraint:** This packet proposes launch canonicals. No route, screen, or source
-file has been deleted, redirected, or retired. Founder approval is required before
-consolidation.
+**Founder approved:** 2026-08-19  
+**Constraint:** This packet is the approved launch-canonical target. No route, screen, or source
+file was deleted, redirected, or retired as part of approval. Consolidation must still follow
+the merge, parity, redirect, and route-test safeguards below.
 
 ## Verdict
 
 The repository has enough functional UI to define a coherent first-release
 surface for all three approved roles. The domain-prefixed People, Work, Time,
-Reporting, and Audit routes are the safest canonical generation. The visible
-manifest now contains only those launch candidates; all 178 registered routes
-remain reachable by direct URL for comparison and future migration.
+Reporting, and Audit routes are the approved canonical generation. The visible
+manifest contains only those launch candidates; all 178 registered routes
+remain reachable by direct URL for comparison and future migration until later
+tested migration work retires them safely.
 
-## Recommended role navigation
+## Approved role navigation
 
 | Role | First-release visible navigation |
 |---|---|
@@ -22,7 +24,7 @@ remain reachable by direct URL for comparison and future migration.
 | Org Admin | Dashboard; People: Directory, Memberships & Invitations, Departments; Work: Projects, Tasks, Milestones, Assignments, Work Reports; Time: Time Entries, Work Sessions, Review & Corrections; Essential Reports; Audit Log; Organization Settings |
 | Platform Admin | Support Console; Organizations; Global Audit |
 
-Employee directory access is not proposed: the only directory implementation
+Employee directory access is not approved for launch: the only directory implementation
 contains organization-administration actions. Platform organization detail is
 kept reachable from the Organizations screen but is not a separate top-level
 navigation item.
@@ -86,7 +88,7 @@ removed from first-release visible navigation.
 | Peripheral prototype | `/employee/dashboard`, `/employee/calendar`, `/employee/notifications`, `/admin/notifications`, `/work/calendar`, `/admin/calendar`, `/admin/offline-sync`, `/admin/engine-console` |
 | Development / diagnostic | `/diagnostics/ui-binding`, `/diagnostics/service-layer` — **DEVELOPMENT / DIAGNOSTIC** and never launch navigation |
 
-## Redirect and retirement plan (not executed)
+## Redirect and retirement plan (approved target; not yet executed)
 
 | Source route(s) | Target | Action after approval |
 |---|---|---|
@@ -104,7 +106,7 @@ removed from first-release visible navigation.
 | `/admin/audit-logs` | `/security/audit-logs` | Redirect after tenant-scope test |
 | `/admin/settings`, `/platform/settings` | `/platform/org-settings` | Merge any useful setting first; redirect after settings route test |
 | `/platform/overview` | `/super/console` | Keep temporarily as alias, then redirect |
-| All deferred families above | None during Phase 3 | Remove from visible navigation; defer. Retire only after later product approval and route-usage proof |
+| All deferred families above | None during core release work | Keep outside visible navigation; retire only after later product approval and route-usage proof |
 | `/diagnostics/*` | None | Keep development-only now; remove from production route generation in a separately approved, tested change |
 
 ## Bounded debugging findings
@@ -124,19 +126,21 @@ removed from first-release visible navigation.
   that prototype config risks authorization assumptions and belongs with the
   later role/access implementation.
 - **Deferred:** all direct registered legacy/deferred routes remain reachable.
-  Production route exclusion and redirects require founder approval and route
-  tests.
+  Production route exclusion and redirects require the approved migration plan
+  plus parity and route tests before execution.
 - **No broken canonical imports or duplicate registered paths found.** Route
   construction in `App.tsx` is registry-generated, so manifest pruning does not
   remove screens.
 
-## Founder decision and acceptance recommendation
+## Founder decision and acceptance record
 
-**Decision requested:** approve or reject this role navigation, canonical
-matrix, merge list, and redirect/retirement plan as a package. There are no
-additional business-policy questions required to complete Phase 3; OQ-004 and
-OQ-005 remain deferred and do not block approval.
+**Decision:** APPROVED on 2026-08-19. The role navigation, canonical matrix,
+merge-required safety list, deferred classifications, and redirect/retirement
+plan are the Phase 3 target package.
 
-**Recommendation:** approve the packet, then mark Phase 3 VERIFIED / COMPLETE.
-Only after approval should a new change implement redirects, production route
-exclusion, and parity merges. Do not start Phase 4 in this run.
+OQ-004 and OQ-005 remain deferred and do not block this approval.
+
+**Phase result:** PHASE 3 — VERIFIED / COMPLETE.
+
+**Next roadmap phase:** Phase 4 — Technical Architecture. Phase 4 must close the
+technical target before Phase 5 Supabase/Auth/RBAC/schema implementation begins.
