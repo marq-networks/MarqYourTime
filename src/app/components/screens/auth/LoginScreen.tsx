@@ -4,7 +4,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * 
  * Three distinct login portals for Employee, Org Admin, and Platform Admin.
- * Each shows mock credentials and routes to the appropriate dashboard.
+ * Portal selection changes presentation only; Supabase authenticates entered credentials.
  */
 
 import { useState } from 'react';
@@ -29,7 +29,6 @@ interface RolePortal {
   color: string;
   bgGradient: string;
   borderColor: string;
-  credentials: { email: string; password: string };
   features: string[];
 }
 
@@ -43,7 +42,6 @@ const ROLE_PORTALS: RolePortal[] = [
     color: 'text-blue-600',
     bgGradient: 'from-blue-50 to-blue-100/50',
     borderColor: 'border-blue-200 hover:border-blue-400',
-    credentials: { email: 'sarah.johnson@company.com', password: 'employee123' },
     features: ['My Work & Tasks', 'Time Tracking', 'Leave Management', 'My Money', 'Calendar & Activity'],
   },
   {
@@ -55,7 +53,6 @@ const ROLE_PORTALS: RolePortal[] = [
     color: 'text-purple-600',
     bgGradient: 'from-purple-50 to-purple-100/50',
     borderColor: 'border-purple-200 hover:border-purple-400',
-    credentials: { email: 'admin@company.com', password: 'admin123' },
     features: ['Execution OS', 'Organization OS', 'Finance Corporate', 'Intelligence OS', 'Security & Compliance'],
   },
   {
@@ -67,7 +64,6 @@ const ROLE_PORTALS: RolePortal[] = [
     color: 'text-emerald-600',
     bgGradient: 'from-emerald-50 to-emerald-100/50',
     borderColor: 'border-emerald-200 hover:border-emerald-400',
-    credentials: { email: 'platform@workos.io', password: 'platform123' },
     features: ['Organizations', 'Platform Billing', 'Global Policies', 'System Health', 'Global Audit Logs'],
   },
 ];
@@ -84,8 +80,8 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
   const handleSelectRole = (portal: RolePortal) => {
     setSelectedRole(portal.role);
-    setEmail(portal.credentials.email);
-    setPassword(portal.credentials.password);
+    setEmail('');
+    setPassword('');
     setError('');
   };
 
@@ -141,17 +137,6 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
             {/* Form */}
             <div className="px-8 py-6 space-y-5">
-              {/* Credentials Hint */}
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                <p className="text-xs text-amber-700 mb-2 flex items-center gap-1.5">
-                  <Lock className="h-3 w-3" /> Demo Credentials
-                </p>
-                <div className="space-y-1">
-                  <p className="text-xs text-amber-800 font-mono">{selectedPortal.credentials.email}</p>
-                  <p className="text-xs text-amber-800 font-mono">{selectedPortal.credentials.password}</p>
-                </div>
-              </div>
-
               {/* Email */}
               <div className="space-y-1.5">
                 <label className="text-sm text-foreground">Email</label>
@@ -271,13 +256,6 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                     ))}
                   </div>
 
-                  {/* Credentials Preview */}
-                  <div className="bg-slate-50 rounded-lg p-3 space-y-1">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Login Credentials</p>
-                    <p className="text-xs font-mono text-foreground">{portal.credentials.email}</p>
-                    <p className="text-xs font-mono text-muted-foreground">{portal.credentials.password}</p>
-                  </div>
-
                   {/* CTA */}
                   <div className={`flex items-center justify-between text-sm ${portal.color} group-hover:gap-2 transition-all`}>
                     <span>Sign in</span>
@@ -292,7 +270,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
         {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-xs text-muted-foreground">
-            WorkOS Workforce Operating System &middot; Demo Environment
+            WorkOS Workforce Operating System
           </p>
         </div>
       </div>

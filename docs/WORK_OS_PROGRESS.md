@@ -1,7 +1,7 @@
 # Work OS Progress
 
 **Last updated:** 2026-08-19
-**Current checkpoint:** PHASE 5 — IMPLEMENTATION READY FOR REMOTE VERIFICATION. Remote Supabase migration and security verification are NOT APPLIED and remain reviewer-gated.
+**Current checkpoint:** PHASE 5 — REMOTE VERIFICATION IN PROGRESS. The remote database is applied and hardened; successful real login/JWT and Platform Admin membership verification remain reviewer-gated.
 
 ## Phase 1 + 2 final verification — 2026-08-18
 - **Verdict:** VERIFIED / COMPLETE; no product blocker found.
@@ -101,4 +101,6 @@ Remain inside Phase 5 until its schema/security acceptance gates are proven. Do 
 - Removed prototype session/selected-role/mock-organization authority from application composition; route/navigation roles remain presentation only.
 - Completed the bounded security findings record in `WORK_OS_PHASE_5_SECURITY_DATABASE.md`.
 - Corrected reviewer-found Phase 5 issues before remote verification: current-user membership loading now selects by authenticated user even for globally-readable Platform Admin sessions, Protected Shell requires a validated active membership, and browser employees cannot mutate authoritative worker job-title or department assignments. Regression coverage includes the selection boundary and corrected pgTAP privilege/worker-field cases.
-- **Remote database status: NOT APPLIED.** Founder review, local Supabase policy execution, remote apply, real-JWT RLS verification, and bootstrap are the next gate. Phase 5 is not COMPLETE.
+- **Remote database status: APPLIED AND HARDENED.** The initial Tenant, Organization, and Platform Admin membership bootstrap and a real Supabase Auth user exist.
+- Real-session testing found that Supabase password recovery established an authenticated session but the application had no recovery-specific gate or new-password UI. The Phase 5 correction adds explicit `PASSWORD_RECOVERY` state, a gated password update through `supabase.auth.updateUser`, post-update sign-out, focused regression tests, and removal of production-facing prototype credentials.
+- **Phase status: REMOTE VERIFICATION IN PROGRESS.** Phase 5 is not COMPLETE until the founder/reviewer completes a fresh real login and verifies the authenticated JWT plus backend Platform Admin membership.
