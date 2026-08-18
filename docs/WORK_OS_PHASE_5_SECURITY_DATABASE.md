@@ -28,7 +28,7 @@ All seven tenant-sensitive tables have RLS enabled and forced. Absence of a poli
 | user_profiles | Self/shared active-org read; self safe-column update | Shared-org read; own update | Read all; own update | Narrow own update only |
 | memberships | Read own active rows | Read rows in administered org | Read all | None |
 | departments | Read member org | Read and insert/update own org | Read and insert/update | Scoped columns; no delete |
-| worker_profiles | Read member org; own job/department update | Read administered org | Read all | Narrow own update |
+| worker_profiles | Read member org | Read administered org | Read all | None |
 | audit_events | No read | Read own-org events | Read all | No insert/update/delete |
 
 `is_active_member`, `is_org_admin`, and `is_platform_admin` are stable, tightly scoped `SECURITY DEFINER` predicates with fixed safe `search_path`. They query backend memberships with active/deleted checks, avoiding recursive membership RLS. Execute is granted only to authenticated callers; table policy still determines access.
@@ -57,13 +57,13 @@ The existing login visual remains bounded, but its email/password are now passed
 
 ## 8. OrganizationContext
 
-After authentication, the context queries active, non-deleted membership rows through the single browser Supabase client. Those rows are RLS-authorized and mapped through the membership repository. A stored organization ID is only a preference: startup accepts it only when it matches freshly returned membership; otherwise the first valid membership is selected or no-access is shown.
+After authentication, the context passes the authenticated user ID to the membership repository, which explicitly selects that user's active, non-deleted rows through the single browser Supabase client. This `user_id` filter is result selection, not authorization proof: RLS remains the authorization boundary, including Platform Admin's legitimate global administrative read capability. Returned current-user rows are mapped through the membership repository. A stored organization ID is only a preference: startup accepts it only when it matches freshly returned membership; otherwise the first valid membership is selected or no-access is shown.
 
 Switching clears active context before a fresh membership read, rejects unavailable organizations, then persists the validated preference and emits `workos-organization-changed`. Organization-scoped future query adapters must listen/use this boundary to clear keys and refetch. Sign-out immediately clears memberships and active context through the user dependency.
 
 ## 9. Protected shell behavior
 
-The shell follows: auth initialization → loading; unauthenticated → existing login; authenticated and memberships loading/switching → loading; load failure → safe unavailable state; no memberships → safe no-access state; valid membership → application. Navigation and route guards use the membership-derived presentation role but remain UX only. RLS/trusted server policy is enforcement.
+The shell follows: auth initialization → loading; unauthenticated → existing login; authenticated and memberships loading/switching → loading; load failure → safe unavailable state; no memberships → safe no-access state; memberships without a validated active membership → safe unavailable state; valid active membership → application. Navigation and route guards use the membership-derived presentation role but remain UX only. RLS/trusted server policy is enforcement.
 
 ## 10. Migration inventory
 
@@ -72,7 +72,11 @@ The shell follows: auth initialization → loading; unauthenticated → existing
 
 ## 11. Security and policy test inventory
 
-`phase_5_rls.sql` is a pgTAP transaction that seeds two tenants and organizations and proves ten required cases: anonymous denial; employee cross-org denial; self-promotion denial; same-org success; unrelated Org Admin denial; Org Admin platform promotion denial; backend-derived Platform Admin access; inactive denial; submitted organization/filter inability to bypass; and audit delete denial. It rolls back all fixtures. Run via `supabase test db` after `supabase start` and migration reset.
+`phase_5_rls.sql` is a pgTAP transaction that seeds two tenants and organizations and proves thirteen required cases: anonymous privilege-layer denial; employee cross-org denial; self-promotion denial; denial of employee job-title and department updates; same-org success; unrelated Org Admin denial; Org Admin platform promotion denial; backend-derived Platform Admin global access alongside current-user-only membership selection; inactive denial; submitted organization/filter inability to bypass; and audit delete denial. It rolls back all fixtures. Run via `supabase test db` after `supabase start` and migration reset.
+
+## 11.1 Reviewer-found Phase 5 corrections
+
+Reviewer inspection found and repository changes corrected three pre-verification issues: Platform Admin rows visible through intentional administrative RLS were previously allowed into current-user organization context; Protected Shell checked only a non-empty membership list rather than a validated active membership; and employees had unapproved update access to authoritative worker job/department assignments. The current-user filter and regression test, active-membership shell guard, removed worker-profile mutation policy/grant, and corrected privilege-oriented pgTAP assertions address those findings without weakening administrative RLS. These corrections have not been applied to any remote database.
 
 ## 12. Debugging findings
 
@@ -95,7 +99,7 @@ Bounded searches found no `VITE_*` service-role/password secret, second `createC
 - Local policy execution requires Docker and the Supabase CLI; repository pgTAP coverage is present but results must not be inferred where tooling is unavailable.
 - Invitation/identity Edge Functions are typed boundaries only. They must be implemented and threat-tested before those operations ship.
 - Initial tenant, organization, and Platform Admin bootstrap needs a reviewed operator runbook and trusted administrative execution.
-- Worker-profile fields are intentionally minimal; People expansion belongs to its approved production slice.
+- Worker-profile fields are intentionally minimal and browser read-only; authoritative employment administration belongs to a later approved administration boundary.
 - Prototype routes/screens remain registered and may display mock data after shell entry; their data is not production authority.
 
 ## 14. Remote deployment checklist

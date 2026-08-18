@@ -159,9 +159,6 @@ create policy departments_read_member on public.departments for select to authen
 create policy departments_admin_insert on public.departments for insert to authenticated with check (public.is_org_admin(organization_id));
 create policy departments_admin_update on public.departments for update to authenticated using (public.is_org_admin(organization_id)) with check (public.is_org_admin(organization_id));
 create policy worker_profiles_read_member on public.worker_profiles for select to authenticated using (public.is_active_member(organization_id));
-create policy worker_profiles_update_self on public.worker_profiles for update to authenticated
-  using (user_id = auth.uid() and public.is_active_member(organization_id))
-  with check (user_id = auth.uid() and public.is_active_member(organization_id));
 create policy audit_events_admin_read on public.audit_events for select to authenticated using (
   public.is_platform_admin() or (organization_id is not null and public.is_org_admin(organization_id)));
 -- No authenticated INSERT/UPDATE/DELETE policies exist for memberships or audit_events.
@@ -201,4 +198,3 @@ grant execute on function public.trusted_set_membership(uuid,uuid,uuid,uuid,publ
 grant select on public.tenants, public.organizations, public.user_profiles, public.memberships, public.departments, public.worker_profiles, public.audit_events to authenticated;
 grant update(display_name, avatar_url, updated_at) on public.user_profiles to authenticated;
 grant insert(name, tenant_id, organization_id), update(name, updated_at) on public.departments to authenticated;
-grant update(job_title, department_id, updated_at) on public.worker_profiles to authenticated;

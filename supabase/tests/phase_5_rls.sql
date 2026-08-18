@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(10);
+select plan(13);
 
 insert into auth.users(id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at)
 values
@@ -23,15 +23,19 @@ insert into public.memberships(id,user_id,tenant_id,organization_id,role,status)
 insert into public.departments(id,tenant_id,organization_id,name) values
  ('40000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001','A Dept'),
  ('40000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000002','20000000-0000-0000-0000-000000000002','B Dept');
+insert into public.worker_profiles(id,user_id,tenant_id,organization_id,department_id,job_title) values
+ ('60000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001','40000000-0000-0000-0000-000000000001','Employee');
 insert into public.audit_events(id,actor_user_id,tenant_id,organization_id,actor_role,action,target_type)
 values ('50000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001','org_admin','test','membership');
 
 set local role anon;
-select is((select count(*)::int from public.tenants), 0, 'unauthenticated cannot read tenant data');
+select throws_ok($$select count(*) from public.tenants$$,'42501',null,'unauthenticated cannot read tenant data');
 reset role; set local role authenticated;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000001',true);
 select is((select count(*)::int from public.departments where organization_id='20000000-0000-0000-0000-000000000002'),0,'employee cannot read another organization');
 select throws_ok($$update public.memberships set role='platform_admin' where user_id='00000000-0000-0000-0000-000000000001'$$,'42501',null,'employee cannot grant role');
+select throws_ok($$update public.worker_profiles set job_title='Chief Executive' where user_id='00000000-0000-0000-0000-000000000001'$$,'42501',null,'employee cannot update own authoritative job title');
+select throws_ok($$update public.worker_profiles set department_id=null where user_id='00000000-0000-0000-0000-000000000001'$$,'42501',null,'employee cannot update own authoritative department');
 select is((select count(*)::int from public.departments where organization_id='20000000-0000-0000-0000-000000000001'),1,'same-organization member read succeeds');
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000003',true);
 update public.departments set name='hacked' where id='40000000-0000-0000-0000-000000000002';
@@ -39,6 +43,7 @@ select is((select count(*)::int from public.departments where name='hacked'),0,'
 select throws_ok($$update public.memberships set role='platform_admin' where user_id='00000000-0000-0000-0000-000000000003'$$,'42501',null,'org admin cannot promote self');
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000004',true);
 select is((select count(*)::int from public.tenants),2,'platform admin derives global access from backend membership');
+select is((select count(*)::int from public.memberships where user_id=auth.uid() and status='active' and deleted_at is null),1,'platform admin current-user membership selection excludes another user');
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000005',true);
 select is((select count(*)::int from public.departments),0,'inactive membership grants no access');
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000001',true);
