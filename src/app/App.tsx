@@ -9,11 +9,13 @@ import type { RoleKey } from './state/roleStore';
 import { ChatDockProvider, ChatDock } from './components/chat-dock';
 import { ExecutionOSProvider } from './contexts/ExecutionOSContext';
 import { LoginScreen } from './components/screens/auth/LoginScreen';
+import { ResetPasswordScreen } from './components/screens/auth/ResetPasswordScreen';
 import { ServiceProvider } from './services';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { OrganizationProvider, useOrganization } from './contexts/OrganizationContext';
 import { ProtectedShell } from './security/ProtectedShell';
+import { PasswordRecoveryGate } from './security/PasswordRecoveryGate';
 import { AppShell } from './components/shared/AppShell';
 
 // Navigation System
@@ -129,5 +131,10 @@ function SecuredApplication() {
 }
 
 export default function App() {
-  return <AuthProvider><OrganizationProvider><SecuredApplication /></OrganizationProvider></AuthProvider>;
+  return <AuthProvider><AuthEntry /></AuthProvider>;
+}
+
+export function AuthEntry() {
+  const { authMode, updatePassword } = useAuth();
+  return <PasswordRecoveryGate authMode={authMode} recovery={<ResetPasswordScreen onUpdatePassword={updatePassword} />}><OrganizationProvider><SecuredApplication /></OrganizationProvider></PasswordRecoveryGate>;
 }

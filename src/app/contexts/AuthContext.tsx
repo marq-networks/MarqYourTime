@@ -1,13 +1,19 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import type { Session, User } from '@supabase/supabase-js';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import type { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
 import { supabase } from '../../lib/supabase';
+import { authModeForEvent, replaceRecoveryPassword, type AuthMode } from './authRecovery';
+
+export type { AuthMode } from './authRecovery';
 
 interface AuthContextValue {
   initializing: boolean;
+  authMode: AuthMode;
   session: Session | null;
   user: User | null;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  updatePassword: (newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -15,18 +21,25 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [initializing, setInitializing] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
+  const [authMode, setAuthMode] = useState<AuthMode>('normal');
+  const authModeRef = useRef<AuthMode>('normal');
 
   useEffect(() => {
     let mounted = true;
+    let authEventReceived = false;
     void supabase.auth.getSession().then(({ data }) => {
-      if (mounted) {
+      if (mounted && !authEventReceived) {
         setSession(data.session);
         setInitializing(false);
       }
     });
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, nextSession) => {
       if (mounted) {
+        authEventReceived = true;
         setSession(nextSession);
+        const nextMode = authModeForEvent(authModeRef.current, event);
+        authModeRef.current = nextMode;
+        setAuthMode(nextMode);
         setInitializing(false);
       }
     });
@@ -38,6 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AuthContextValue>(() => ({
     initializing,
+    authMode,
     session,
     user: session?.user ?? null,
     signIn: async (email, password) => {
@@ -46,9 +60,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     signOut: async () => {
       const { error } = await supabase.auth.signOut();
-      if (error) throw new Error(error.message);
+      if (error) throw new Error('Unable to sign out. Please try again.');
     },
-  }), [initializing, session]);
+    updatePassword: async (newPassword) => {
+      await replaceRecoveryPassword(supabase.auth, authModeRef.current, session, newPassword);
+      authModeRef.current = 'normal';
+      setAuthMode('normal');
+      setSession(null);
+    },
+  }), [authMode, initializing, session]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

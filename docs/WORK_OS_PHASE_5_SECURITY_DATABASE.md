@@ -1,7 +1,7 @@
 # Work OS Phase 5 — Security and Database Foundation
 
-**Status:** PHASE 5 — IMPLEMENTATION READY FOR REMOTE VERIFICATION
-**Remote database:** NOT APPLIED. Repository artifacts require founder review before any remote action.
+**Status:** PHASE 5 — REMOTE VERIFICATION IN PROGRESS
+**Remote database:** APPLIED AND HARDENED. The initial Tenant, Organization, and Platform Admin membership bootstrap exists; final real login/JWT verification remains open.
 
 ## 1. Schema overview
 
@@ -51,9 +51,9 @@ The shared Edge Function contracts are scaffolding, not deployed endpoints. No s
 
 ## 7. Frontend AuthContext
 
-`AuthProvider` initializes from `supabase.auth.getSession`, maintains the Supabase session/user, subscribes exactly once to `onAuthStateChange`, unsubscribes on teardown, and exposes password sign-in and sign-out. It does not contain a role or membership. The prior `sessionStorage` boolean/role prototype is isolated from application composition and no longer authenticates the shell.
+`AuthProvider` initializes from `supabase.auth.getSession`, maintains the Supabase session/user, subscribes exactly once to `onAuthStateChange`, unsubscribes on teardown, and exposes password sign-in, sign-out, and recovery-session password replacement. A `PASSWORD_RECOVERY` event preserves the authenticated session while entering an explicit recovery mode that later `SIGNED_IN`, `TOKEN_REFRESHED`, and `USER_UPDATED` events cannot overwrite. The recovery gate renders before `OrganizationProvider`, updates through the existing browser client, and signs out after success. It does not contain a role or membership. The prior `sessionStorage` boolean/role prototype is isolated from application composition and no longer authenticates the shell.
 
-The existing login visual remains bounded, but its email/password are now passed to Supabase Auth. Selecting a portal changes presentation and defaults only; it is not authorization evidence.
+The existing login visual remains bounded, but its entered email/password are now passed to Supabase Auth. Production-facing demo credentials and autofill were removed. Selecting a portal changes presentation only; it is not authorization evidence.
 
 ## 8. OrganizationContext
 
@@ -120,4 +120,4 @@ This migration is forward-only. Do not edit it after remote application. Before 
 
 ## 16. Phase 5 acceptance status
 
-**PHASE 5 — IMPLEMENTATION READY FOR REMOTE VERIFICATION.** Repository implementation and local application quality checks are ready; remote migration, real-JWT RLS verification, trusted-operation deployment, and bootstrap remain founder/reviewer-gated. Phase 5 is not marked complete.
+**PHASE 5 — REMOTE VERIFICATION IN PROGRESS.** The remote database is applied and hardened, the initial Tenant/Organization/Platform Admin bootstrap exists, and a real Supabase Auth user exists. Real-session verification exposed an application gap: the recovery session previously entered the ordinary authenticated flow without a new-password surface. The correction now handles the supported `PASSWORD_RECOVERY` → password update → sign-out flow. Phase 5 remains incomplete until a founder/reviewer confirms a fresh login and authenticated JWT plus Platform Admin membership behavior.
