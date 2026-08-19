@@ -128,12 +128,12 @@ Systematic search baseline: 107 source files contain explicit mock/dummy/sample/
 
 | Flow | Status | Gap / required proof |
 |---|---|---|
-| Sign in | **PARTIAL/REAL** | Supabase password sign-in works in code; raw provider message is surfaced; fresh real JWT/Platform Admin proof still open; role portal copy advertises deferred features |
+| Sign in | **PARTIAL/REAL — BOUNDED UX FIXED, AWAITING REMOTE VERIFICATION** | Supabase password sign-in works in code; provider details are mapped to generic credential or throttling guidance; fresh real JWT/Platform Admin proof still open; role portal copy advertises deferred features |
 | Sign out | **REAL, UNVERIFIED E2E** | safe generic error; verify session/storage cleared and back-navigation blocked |
 | Restore / refresh | **REAL FOUNDATION** | Supabase restoration/listener; verify expiry/refresh/offline races with real session |
 | Expiry/token refresh | **PARTIAL** | SDK event handling exists; no explicit expired-session explanation/retry UX or E2E test |
-| Invalid password / enumeration safety | **PARTIAL/UNSAFE UX** | raw Supabase message shown; bound messages and rate-limit behavior |
-| Forgot-password request | **MISSING** | no request surface calling `resetPasswordForEmail` |
+| Invalid password / enumeration safety | **FIXED — AWAITING REMOTE VERIFICATION** | bounded credential and throttling messages have focused tests; project-level abuse/rate-limit behavior still requires remote proof |
+| Forgot-password request | **FIXED — AWAITING REMOTE VERIFICATION** | login recovery mode calls `resetPasswordForEmail` with an explicit same-origin redirect, normalizes/validates email, uses enumeration-safe success copy, and bounds provider/rate-limit failures; delivery remains external proof |
 | Recovery link/reset password | **PARTIAL/REAL** | recovery event/gate/update/sign-out tested; redirect URL/email delivery/expired link E2E unverified |
 | Change password while logged in | **MISSING** | account security surface absent |
 | Email verification/resend/change | **MISSING** | no confirmation/resend/change UX |
@@ -281,8 +281,8 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-005 | P0 | Org Audit displays mock analytics activity, not trusted audit | 8 | Audit | No | audit read repository | cross-org denial and provenance test |
 | GAP-006 | P0 | Global Audit displays static fabricated records | 8 | Audit | No | platform audit repository | global/platform policy E2E |
 | GAP-007 | P0 | Trusted tenant/org/platform CRUD boundary absent | 5/6 | Platform | No | endpoint/runbook/matrix | cross-tenant + atomic audit tests |
-| GAP-008 | P0 | Raw auth-provider errors and abuse/rate-limit behavior unbounded/unverified | 5/10 | Security | Yes bounded UX | error taxonomy/project config | enumeration/rate-limit test |
-| GAP-009 | P1 | Forgot-password request flow missing | 5/6 | Auth | Yes | SMTP/redirect config | request, generic response, delivery E2E |
+| GAP-008 | P0 | **FIXED — AWAITING REMOTE VERIFICATION:** raw sign-in errors are now bounded; remote abuse/rate-limit configuration remains unverified | 5/10 | Security | Bounded UX fixed in `332dde9` | project config | focused mapping tests pass; remote enumeration/rate-limit test required |
+| GAP-009 | P1 | **FIXED — AWAITING REMOTE VERIFICATION:** forgot-password request flow is implemented with enumeration-safe UX and bounded errors | 5/6 | Auth | Fixed in `332dde9` | SMTP/redirect config | focused request/error tests pass; delivery E2E required |
 | GAP-010 | P1 | Recovery email/expired-link/redirect round trip unverified | 5 | Auth | No | production Auth config | real link E2E |
 | GAP-011 | P1 | Invite acceptance/first login/resend confirmation missing | 5/6 | Auth | No | GAP-002/SMTP | lifecycle E2E |
 | GAP-012 | P1 | Change password/email/security settings missing | 6 | Account | No | account policy | authenticated account E2E |

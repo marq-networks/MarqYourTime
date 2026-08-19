@@ -104,14 +104,14 @@ function AppContent() {
 }
 
 function SecuredApplication() {
-  const { signIn } = useAuth();
+  const { signIn, requestPasswordReset } = useAuth();
   const { activeRole } = useOrganization();
   const initialPath = getDefaultRouteForRole(activeRole ?? 'employee');
   
   return (
     <ErrorBoundary>
       <ToastProvider>
-        <ProtectedShell login={<LoginScreen onLogin={signIn} />}>
+        <ProtectedShell login={<LoginScreen onLogin={signIn} onRequestPasswordReset={requestPasswordReset} />}>
           <Router initialPath={initialPath}>
           <ServiceProvider>
             <ExecutionOSProvider>

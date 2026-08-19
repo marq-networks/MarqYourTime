@@ -4,7 +4,7 @@ import { LoginScreen } from './LoginScreen';
 
 describe('LoginScreen', () => {
   it('does not present prototype credentials as production login instructions', () => {
-    const markup = renderToStaticMarkup(<LoginScreen onLogin={vi.fn()} />);
+    const markup = renderToStaticMarkup(<LoginScreen onLogin={vi.fn()} onRequestPasswordReset={vi.fn()} />);
     expect(markup).not.toContain('platform@workos.io');
     expect(markup).not.toContain('platform123');
     expect(markup).not.toContain('Demo Credentials');
