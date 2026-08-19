@@ -1,19 +1,22 @@
 import { useState } from 'react';
 import { Lock } from 'lucide-react';
 import { submitPasswordReset } from './resetPasswordSubmission';
+import type { PasswordRecoveryResult } from '../../../contexts/authRecovery';
 
-export function ResetPasswordScreen({ onUpdatePassword }: { onUpdatePassword: (password: string) => Promise<void> }) {
+export function ResetPasswordScreen({ onUpdatePassword }: { onUpdatePassword: (password: string) => Promise<PasswordRecoveryResult> }) {
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState<PasswordRecoveryResult | null>(null);
 
   const submit = async () => {
     if (submitting) return;
     setSubmitting(true);
     setError('');
     try {
-      await submitPasswordReset(password, confirmation, onUpdatePassword);
+      const result = await submitPasswordReset(password, confirmation, onUpdatePassword);
+      setSuccess(result);
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : 'Unable to update your password. Please try again.');
       setSubmitting(false);
@@ -27,10 +30,18 @@ export function ResetPasswordScreen({ onUpdatePassword }: { onUpdatePassword: (p
           <div className="flex items-center gap-3"><Lock className="h-6 w-6 text-blue-600" /><div><h1 className="text-xl text-foreground">Set a new password</h1><p className="text-sm text-muted-foreground">Complete your secure account recovery.</p></div></div>
         </header>
         <div className="px-8 py-6 space-y-5">
+          {success ? (
+            <div role="status" className="space-y-3 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-900">
+              <p>Your password was updated successfully. You can now sign in with your new password.</p>
+              {!success.signedOut && <p>We could not fully close the recovery session. For safety, close this browser tab before signing in.</p>}
+              <a href="/login" className="inline-block font-medium underline">Return to sign in</a>
+            </div>
+          ) : <>
           <label className="block space-y-1.5"><span className="text-sm text-foreground">New Password</span><input aria-label="New Password" type="password" autoComplete="new-password" value={password} onChange={(event) => { setPassword(event.target.value); setError(''); }} className="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-sm" /></label>
           <label className="block space-y-1.5"><span className="text-sm text-foreground">Confirm New Password</span><input aria-label="Confirm New Password" type="password" autoComplete="new-password" value={confirmation} onChange={(event) => { setConfirmation(event.target.value); setError(''); }} onKeyDown={(event) => event.key === 'Enter' && void submit()} className="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-sm" /></label>
           {error && <p role="alert" className="text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2">{error}</p>}
           <button type="button" onClick={() => void submit()} disabled={submitting} className="w-full px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed">{submitting ? 'Updating password…' : 'Update Password'}</button>
+          </>}
         </div>
       </section>
     </main>

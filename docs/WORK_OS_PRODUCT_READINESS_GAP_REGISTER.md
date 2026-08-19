@@ -12,7 +12,7 @@
 
 **NOT PRODUCTION READY.** The protected shell, Supabase session integration, validated organization membership selection, deny-by-default Phase 5 schema/RLS, trusted membership mutation, password-recovery gate, test harness, and production build are credible foundations. They do not make the rendered product production-capable: after authentication, almost every launch domain screen still reads embedded fixtures, React in-memory services, local storage, or independent mock contexts. Several visible actions simulate success, and both canonical audit views are untrusted mock/activity projections.
 
-The audit found **63 material findings: 8 P0, 25 P1, 21 P2, and 9 P3**. No destructive mock removal is safe yet. The immediate proof remains a fresh real login/JWT and Platform Admin membership test, followed by Phase 6 foundations and vertical replacement behind approved repository boundaries.
+The audit now tracks **64 material findings: 8 P0, 26 P1, 21 P2, and 9 P3**. No destructive mock removal is safe yet. Manual evidence confirms the real password-login happy path reaches the correct Platform Admin organization and protected console; JWT inspection, logout, other roles, and negative authorization cases remain open.
 
 ### What is real today
 
@@ -31,10 +31,10 @@ The audit found **63 material findings: 8 P0, 25 P1, 21 P2, and 9 P3**. No destr
 | Severity | Count | Meaning in this register |
 |---|---:|---|
 | P0 | 8 | Security, authorization, auth, or trusted-data blocker |
-| P1 | 25 | Launch capability blocker |
+| P1 | 26 | Launch capability blocker |
 | P2 | 21 | Important production quality/hardening |
 | P3 | 9 | Polish or later/deferred containment |
-| **Total** | **63** | Unique tracked findings (`GAP-001`–`GAP-063`) |
+| **Total** | **64** | Unique tracked findings (`GAP-001`–`GAP-064`) |
 
 Static evidence included the current **172 unique literal registry entries** (the previously approved packet recorded 178; current code proves the literal baseline is now 172), 27 visible role/path declarations (22 unique visible paths), 353 TypeScript/TSX source files, runtime provider composition, imports, storage use, simulation patterns, schema/RLS SQL, and command results. “Production-ready” is not awarded solely because a component renders. Responsive/accessibility and end-to-end behavior not provable statically are explicitly manual-QA unknowns.
 
@@ -274,7 +274,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 
 | ID | Sev | Category / finding | Phase | Owner | Safe now? | Dependency | Proof required |
 |---|---|---|---|---|---|---|---|
-| GAP-001 | P0 | Fresh real login/JWT + Platform Admin membership remains unverified | 5 | Security | No | reviewer credentials/environment | real login, JWT, membership, logout evidence |
+| GAP-001 | P0 | **PARTIAL POSITIVE MANUAL EVIDENCE:** real password login loaded `team@marqnetworks.com`, Platform Administrator, MARQ Networks, and the protected Platform Admin console; JWT inspection, logout, cross-role, and negative access remain unverified | 5 | Security | Partially verified 2026-08-19 | reviewer environment/role fixtures | JWT, logout, all-role, cross-org and forbidden-operation evidence |
 | GAP-002 | P0 | Invitation/identity administration endpoint not deployed | 5 | Security/People | No | trusted runtime + email policy | invite/accept negative/positive E2E |
 | GAP-003 | P0 | Canonical Members falsely treats Employee creation as invitation/membership | 5/6 | People | Yes after endpoint | GAP-002 | identity+membership+email+audit proof |
 | GAP-004 | P0 | People Directory localStorage is authoritative and conflates security identity | 8 | People | No | lifecycle contract/repository | RLS CRUD and migration parity |
@@ -337,12 +337,13 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-061 | P3 | Focus/labels/status/table semantics require polish after blocker pass | 10 | UX | Yes per slice | accessibility baseline | automated + manual audit |
 | GAP-062 | P3 | Source-map policy and bundle analysis absent | 6/10 | Deploy | Yes | monitoring choice | artifact inspection |
 | GAP-063 | P3 | Advanced enterprise capabilities remain intentionally absent | 9 | Product | No | explicit approval | roadmap decision, not launch blocker |
+| GAP-064 | P1 | **FIXED IN REPOSITORY — AWAITING DEPLOYED RE-TEST:** recovery could report password-update failure after Supabase accepted the password | 5 | Auth | Fixed: update and cleanup outcomes separated; safe provider mapping and success state tested | deployment/real recovery link | successful reset truthfully reports success; cleanup failure is bounded; same-password and expired-session cases verified |
 
 ## 25. Phase mapping
 
 | Phase | Findings / required outcome |
 |---|---|
-| **5** | GAP-001–003, 007–013, 036, 038: complete real auth/JWT/RBAC verification, trusted identity/membership/org operations, bounded auth behavior. **Do not close until proof passes.** |
+| **5** | GAP-001–003, 007–013, 036, 038, 064: complete real auth/JWT/RBAC verification, trusted identity/membership/org operations, bounded auth behavior. **Do not close until proof passes.** |
 | **6** | production route containment, error/env/query foundations, quality baseline, E2E scaffolding, SMTP/deployment/observability, initial performance and accessibility baselines |
 | **7** | GAP-017–019, 054: one secure production Work vertical slice, then canonical Work replacement and legacy parity |
 | **8** | production People/Time/Reporting/Audit repositories and workflows; retire corresponding mock authority only after parity |
@@ -457,4 +458,4 @@ Work OS is production-ready only when all P0/P1 findings are closed with linked 
 
 ## 29. Exact next action and stop
 
-**Next action:** founder/reviewer executes and records `GAP-001` against the remotely hardened Supabase project: fresh password login, authenticated JWT, Platform Admin membership/organization load, cross-role/direct-route behavior, and logout. Keep Phase 5 open. Then approve Batch 1 scope; do not begin broad Phase 7/8 implementation or delete mocks from this audit.
+**Next action:** deploy and manually re-test `GAP-064`, then complete the still-open `GAP-001` evidence: inspect the authenticated JWT, verify logout/back-navigation, and exercise Org Admin, Employee, cross-role, and cross-organization negative cases. Continue independent Batch 1 implementation with `GAP-002`; do not begin broad Phase 7/8 implementation or delete mocks from this audit.

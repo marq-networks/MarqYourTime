@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
 import { supabase } from '../../lib/supabase';
-import { authModeForEvent, replaceRecoveryPassword, type AuthMode } from './authRecovery';
+import { authModeForEvent, replaceRecoveryPassword, type AuthMode, type PasswordRecoveryResult } from './authRecovery';
 import { requestPasswordRecovery, safeSignInError } from './authOperations';
 
 export type { AuthMode } from './authRecovery';
@@ -15,7 +15,7 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<void>;
   requestPasswordReset: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
-  updatePassword: (newPassword: string) => Promise<void>;
+  updatePassword: (newPassword: string) => Promise<PasswordRecoveryResult>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -70,10 +70,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) throw new Error('Unable to sign out. Please try again.');
     },
     updatePassword: async (newPassword) => {
-      await replaceRecoveryPassword(supabase.auth, authModeRef.current, session, newPassword);
+      const result = await replaceRecoveryPassword(supabase.auth, authModeRef.current, session, newPassword);
       authModeRef.current = 'normal';
       setAuthMode('normal');
       setSession(null);
+      return result;
     },
   }), [authMode, initializing, session]);
 
