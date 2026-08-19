@@ -18,6 +18,7 @@ export type LoginRole = 'employee' | 'org_admin' | 'platform_admin';
 
 interface LoginScreenProps {
   onLogin: (email: string, password: string) => Promise<void>;
+  onRequestPasswordReset: (email: string) => Promise<void>;
 }
 
 interface RolePortal {
@@ -68,13 +69,15 @@ const ROLE_PORTALS: RolePortal[] = [
   },
 ];
 
-export function LoginScreen({ onLogin }: LoginScreenProps) {
+export function LoginScreen({ onLogin, onRequestPasswordReset }: LoginScreenProps) {
   const [selectedRole, setSelectedRole] = useState<LoginRole | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState('');
+  const [recoveryOpen, setRecoveryOpen] = useState(false);
+  const [recoverySent, setRecoverySent] = useState(false);
 
   const selectedPortal = ROLE_PORTALS.find(p => p.role === selectedRole);
 
@@ -103,6 +106,19 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
     setEmail('');
     setPassword('');
     setError('');
+  };
+
+  const handleRecovery = async () => {
+    setIsLoggingIn(true);
+    setError('');
+    try {
+      await onRequestPasswordReset(email);
+      setRecoverySent(true);
+    } catch (recoveryError) {
+      setError(recoveryError instanceof Error ? recoveryError.message : 'Unable to request a recovery link right now. Please try again.');
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   // Login Form View
@@ -137,6 +153,13 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
             {/* Form */}
             <div className="px-8 py-6 space-y-5">
+              {recoveryOpen && (
+                <div className="rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-900">
+                  {recoverySent
+                    ? 'If an account exists for this email, a password recovery link has been sent.'
+                    : 'Enter your email and we’ll send a recovery link. For privacy, the result does not reveal whether an account exists.'}
+                </div>
+              )}
               {/* Email */}
               <div className="space-y-1.5">
                 <label className="text-sm text-foreground">Email</label>
@@ -152,8 +175,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                 </div>
               </div>
 
-              {/* Password */}
-              <div className="space-y-1.5">
+              {!recoveryOpen && <div className="space-y-1.5">
                 <label className="text-sm text-foreground">Password</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -172,7 +194,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-              </div>
+              </div>}
 
               {/* Error */}
               {error && (
@@ -181,21 +203,28 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
               {/* Login Button */}
               <button
-                onClick={handleLogin}
-                disabled={isLoggingIn || !email || !password}
+                onClick={() => void (recoveryOpen ? handleRecovery() : handleLogin())}
+                disabled={isLoggingIn || !email || (!recoveryOpen && !password) || recoverySent}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {isLoggingIn ? (
                   <>
                     <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                    Signing in...
+                    {recoveryOpen ? 'Requesting link...' : 'Signing in...'}
                   </>
                 ) : (
                   <>
-                    Sign In as {selectedPortal.title}
+                    {recoveryOpen ? 'Send Recovery Link' : `Sign In as ${selectedPortal.title}`}
                     <ArrowRight className="h-4 w-4" />
                   </>
                 )}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setRecoveryOpen(!recoveryOpen); setRecoverySent(false); setError(''); }}
+                className="w-full text-sm text-primary hover:underline"
+              >
+                {recoveryOpen ? 'Return to sign in' : 'Forgot password?'}
               </button>
             </div>
           </div>

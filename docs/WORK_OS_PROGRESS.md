@@ -3,6 +3,8 @@
 **Last updated:** 2026-08-19
 **Current checkpoint:** PHASE 5 — REMOTE VERIFICATION IN PROGRESS. The remote database is applied and hardened; successful real login/JWT and Platform Admin membership verification remain reviewer-gated.
 
+**Current remediation batch:** Batch 1 — Phase 5 closure blockers. GAP-008's client error-bounding slice and GAP-009's forgot-password request flow are fixed in `332dde9` and await remote verification. Remaining Phase 5 P0 blockers are GAP-001, GAP-002, GAP-007, and the remote abuse/rate-limit proof retained by GAP-008; remaining Phase 5 P1 proof includes GAP-009 through GAP-011 and GAP-013. The next automatic code gap is GAP-002 (trusted invitation/identity administration), while the current acceptance gate remains blocked on credentials, deployed trusted runtime/email configuration, and real-session proof.
+
 ## Phase 1 + 2 final verification — 2026-08-18
 - **Verdict:** VERIFIED / COMPLETE; no product blocker found.
 - Launch role identifiers are consistently `employee`, `org_admin`, and `platform_admin` in the canonical manifest, role configuration, route registry, state, and service types.
@@ -103,4 +105,5 @@ Remain inside Phase 5 until its schema/security acceptance gates are proven. Do 
 - Corrected reviewer-found Phase 5 issues before remote verification: current-user membership loading now selects by authenticated user even for globally-readable Platform Admin sessions, Protected Shell requires a validated active membership, and browser employees cannot mutate authoritative worker job-title or department assignments. Regression coverage includes the selection boundary and corrected pgTAP privilege/worker-field cases.
 - **Remote database status: APPLIED AND HARDENED.** The initial Tenant, Organization, and Platform Admin membership bootstrap and a real Supabase Auth user exist.
 - Real-session testing found that Supabase password recovery established an authenticated session but the application had no recovery-specific gate or new-password UI. The Phase 5 correction adds explicit `PASSWORD_RECOVERY` state, a gated password update through `supabase.auth.updateUser`, post-update sign-out, focused regression tests, and removal of production-facing prototype credentials.
+- The Batch 1 auth remediation now maps sign-in failures to bounded credential/throttling messages and adds an enumeration-safe forgot-password request mode using Supabase Auth with an explicit same-origin reset redirect. Eight focused auth/UI tests and the full 21-test repository suite pass; remote delivery, configured redirects, provider throttling, and real-session behavior remain external verification rather than claimed green.
 - **Phase status: REMOTE VERIFICATION IN PROGRESS.** Phase 5 is not COMPLETE until the founder/reviewer completes a fresh real login and verifies the authenticated JWT plus backend Platform Admin membership.
