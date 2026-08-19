@@ -3,6 +3,7 @@ import type { LaunchRole, ValidatedMembership } from '../security/types';
 
 export interface OrganizationContextValue {
   loading: boolean;
+  revalidating: boolean;
   switching: boolean;
   memberships: ValidatedMembership[];
   activeMembership: ValidatedMembership | null;
