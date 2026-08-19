@@ -3,7 +3,7 @@
 **Last updated:** 2026-08-19
 **Current checkpoint:** PHASE 5 — DEPLOYED, CONSOLIDATED MANUAL VERIFICATION PENDING. PR #17 is merged and its Work OS Vercel deployment succeeded. The Phase-5 database and trusted Edge boundaries are remotely deployed; the remaining closeout work is the four consolidated QA journeys below plus the leaked-password-protection project setting.
 
-**Current remediation batch:** Batch 1 — Phase 5 closure only. Remote migration `20260819180940` (`phase_5_org_lifecycle_and_private_predicates`) is applied. `organization-administration` is ACTIVE with JWT verification, and `identity-administration` version 2 is ACTIVE with JWT verification and invitation resend support. Remote SQL verification passed the trusted organization-operation privilege boundary and rollback-only correlated audit check. No Phase-5 gap is waiting for deployment, but none is marked verified without its remaining production/manual evidence. Phase 6 has not begun.
+**Current remediation batch:** Batch 1 — Phase 5 closure only. **QA-1 BLOCKER DISCOVERED:** the canonical Organizations UI was still local/demo even though the trusted backend lifecycle was deployed. The bounded GAP-015 Phase-5 slice is now production-wired in the repository as a QA-1 dependency of GAP-007: authoritative tenant/organization reads use RLS and authenticated create/update/deactivate uses `organization-administration`, followed by an authoritative refresh and correlated success evidence. It requires deployment and QA-1 re-test before either gap is verified. Remote migration `20260819180940` (`phase_5_org_lifecycle_and_private_predicates`) is applied. `organization-administration` is ACTIVE with JWT verification, and `identity-administration` version 2 is ACTIVE with JWT verification and invitation resend support. Phase 6 has not begun.
 
 ## PHASE 5 CLOSEOUT SCOREBOARD
 
@@ -14,7 +14,7 @@
 | GAP-001 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Repository auth/RLS tests | Partial positive login evidence | Controlled role fixtures | QA-1, QA-3, QA-4 |
 | GAP-002 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Remote RPC denial/service-role/rollback audit passed | No real email acceptance | Email recipient journey | QA-2 |
 | GAP-003 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Focused build/unit proof | No invitation UI E2E | Email recipient journey | QA-2 |
-| GAP-007 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Remote privilege and rollback/audit checks passed | No lifecycle UI E2E | Controlled organization fixture | QA-1 |
+| GAP-007 | QA-1 BLOCKED — CANONICAL UI REMEDIATION READY FOR DEPLOYMENT | Yes | Yes | Remote privilege and rollback/audit checks passed | Local/demo UI blocker corrected; production re-test pending | Controlled organization fixture | Deploy UI, then QA-1 |
 | GAP-008 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Bounded mapping tests pass | No throttling proof | Supabase project configuration | QA-4 |
 | GAP-009 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Forgot-password tests pass | No delivery proof | SMTP/redirect environment | QA-4 |
 | GAP-010 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Invalid-session mapping test passes | No round-trip proof | Real recovery email | QA-4 |
