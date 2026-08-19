@@ -71,7 +71,7 @@ Static evidence included the current **172 unique literal registry entries** (th
 | Org Admin `/security/audit-logs` | Audit | Yes | mock mutable analytics activity, not `audit_events`; export/filter buttons unwired | swallowed errors; no trustworthy empty/error | **P0 PRODUCTION DATA GAP — A; Phase 8** |
 | Org Admin `/platform/org-settings` | Platform | Yes | mock/local settings; no production organization update boundary | simulated/local success | **P1 PRODUCTION DATA GAP — A; Phase 6** |
 | Platform Admin `/super/console` | Platform | Yes | static/mock KPIs | no operational error/empty state | **MOCK ONLY — C; Phase 6** |
-| Platform Admin `/super/organizations` | Platform | Yes | hard-coded orgs; Date ID local create | no trusted tenant/org operation | **P0 FUNCTIONAL GAP — A; Phase 5/6** |
+| Platform Admin `/super/organizations` | Platform | Yes | authoritative RLS reads; authenticated trusted Edge Function create/update/deactivate | correlated remote persistence with refresh; production QA re-test pending | **P0 QA-1 DEPENDENCY OF GAP-007 — A; Phase 5** |
 | Platform Admin `/super/org-detail` | Platform | Contextual | hard-coded/detail state; navigation selection requires QA | direct URL context undefined | **FUNCTIONAL GAP — A/C; Phase 6** |
 | Platform Admin `/super/audit-logs` | Audit | Yes | static 2025 audit records; local filter/export | no `audit_events`, pagination, errors | **P0 MOCK ONLY — A; Phase 8** |
 
@@ -290,7 +290,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-012 | P1 | Change password/email/security settings missing | 6 | Account | No | account policy | authenticated account E2E |
 | GAP-013 | P1 | **DEPLOYED — AWAITING MANUAL VERIFICATION:** Supabase owns refresh/restoration and organization authorization revalidates on focus, visibility return, and bounded cadence | 5/10 | Auth | Deployed in PR #17 | real-session timing | QA-3 revocation and QA-4 restore/logout proof |
 | GAP-014 | P1 | Downstream domain stores do not invalidate/scope on organization switch | 6–8 | Shared | No | production query boundary | no stale/cross-org data test |
-| GAP-015 | P1 | Platform organizations/create/detail are hard-coded/local | 5/6 | Platform | No | GAP-007 | empty/create/edit/context tests |
+| GAP-015 | P1 | **QA-1 BLOCKER DISCOVERED — REMEDIATION READY FOR DEPLOYMENT:** canonical Organizations was hard-coded/local; its Phase-5 list/create/update/deactivate slice now uses production RLS reads and the trusted Edge Function, but remains a QA-1 dependency of GAP-007 until deployed and re-tested | 5/6 | Platform | Repository tests passed; production re-test pending | GAP-007 (not a duplicate score item) | loading/empty/error plus QA-1 create/edit/deactivate/context proof |
 | GAP-016 | P1 | Organization settings are prototype/local | 6 | Platform | No | trusted update boundary | validation/RLS/audit E2E |
 | GAP-017 | P1 | Work has no production repository/schema/persistence | 7 | Work | No | Phases 5–6 gates | secure project/task vertical slice |
 | GAP-018 | P1 | Three Work state owners diverge | 7 | Work | No | GAP-017/contract choice | parity and single-authority proof |
