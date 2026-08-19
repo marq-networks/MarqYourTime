@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(13);
+select plan(16);
 
 insert into auth.users(id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at)
 values
@@ -8,7 +8,8 @@ values
  ('00000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000000','authenticated','authenticated','other@test.local','',now(),now(),now()),
  ('00000000-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000000','authenticated','authenticated','admin@test.local','',now(),now(),now()),
  ('00000000-0000-0000-0000-000000000004','00000000-0000-0000-0000-000000000000','authenticated','authenticated','platform@test.local','',now(),now(),now()),
- ('00000000-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000000','authenticated','authenticated','inactive@test.local','',now(),now(),now());
+ ('00000000-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000000','authenticated','authenticated','inactive@test.local','',now(),now(),now()),
+ ('00000000-0000-0000-0000-000000000006','00000000-0000-0000-0000-000000000000','authenticated','authenticated','invited@test.local','',now(),now(),now());
 insert into public.tenants(id,name,slug) values
  ('10000000-0000-0000-0000-000000000001','Tenant A','tenant-a'),('10000000-0000-0000-0000-000000000002','Tenant B','tenant-b');
 insert into public.organizations(id,tenant_id,name,slug) values
@@ -19,7 +20,8 @@ insert into public.memberships(id,user_id,tenant_id,organization_id,role,status)
  ('30000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000002','20000000-0000-0000-0000-000000000002','employee','active'),
  ('30000000-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001','org_admin','active'),
  ('30000000-0000-0000-0000-000000000004','00000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001','platform_admin','active'),
- ('30000000-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000005','10000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001','employee','inactive');
+ ('30000000-0000-0000-0000-000000000005','00000000-0000-0000-0000-000000000005','10000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001','employee','inactive'),
+ ('30000000-0000-0000-0000-000000000006','00000000-0000-0000-0000-000000000006','10000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001','employee','invited');
 insert into public.departments(id,tenant_id,organization_id,name) values
  ('40000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001','A Dept'),
  ('40000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000002','20000000-0000-0000-0000-000000000002','B Dept');
@@ -49,5 +51,18 @@ select is((select count(*)::int from public.departments),0,'inactive membership 
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000001',true);
 select is((select count(*)::int from public.departments where organization_id='20000000-0000-0000-0000-000000000002'),0,'client organization filter cannot bypass membership');
 select throws_ok($$delete from public.audit_events where id='50000000-0000-0000-0000-000000000001'$$,'42501',null,'normal client cannot delete audit records');
+select throws_ok(
+  $$select * from public.trusted_accept_invitation('00000000-0000-0000-0000-000000000006','70000000-0000-4000-8000-000000000001')$$,
+  '42501', null, 'authenticated caller cannot invoke trusted invitation acceptance');
+reset role; set local role service_role;
+select results_eq(
+  $$select * from public.trusted_accept_invitation('00000000-0000-0000-0000-000000000006','70000000-0000-4000-8000-000000000001')$$,
+  $$values ('30000000-0000-0000-0000-000000000006'::uuid)$$,
+  'trusted acceptance activates the invited membership');
+reset role;
+select is(
+  (select count(*)::int from public.audit_events where target_id='30000000-0000-0000-0000-000000000006'
+    and action='invitation.accepted' and correlation_id='70000000-0000-4000-8000-000000000001'),
+  1, 'invitation acceptance writes its correlated audit event atomically');
 select * from finish();
 rollback;

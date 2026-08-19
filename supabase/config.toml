@@ -1,3 +1,6 @@
 project_id = "marq-your-time"
 [db]
 major_version = 15
+
+[functions.identity-administration]
+verify_jwt = true
