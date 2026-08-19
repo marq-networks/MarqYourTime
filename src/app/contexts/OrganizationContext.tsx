@@ -1,22 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { listCurrentMemberships } from '../security/membershipRepository';
-import type { LaunchRole, ValidatedMembership } from '../security/types';
+import type { ValidatedMembership } from '../security/types';
+import { OrganizationContext } from './organizationContextValue';
+
+export { useOrganization } from './organizationContextValue';
 
 const PREFERENCE_KEY = 'workos_active_organization_preference';
-
-interface OrganizationContextValue {
-  loading: boolean;
-  switching: boolean;
-  memberships: ValidatedMembership[];
-  activeMembership: ValidatedMembership | null;
-  activeRole: LaunchRole | null;
-  error: string | null;
-  switchOrganization: (organizationId: string) => Promise<void>;
-  refresh: () => Promise<void>;
-}
-
-const OrganizationContext = createContext<OrganizationContextValue | null>(null);
 
 export function OrganizationProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -54,6 +44,22 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => { void refresh(); }, [refresh]);
 
+  // Membership and organization state is authorization-sensitive. Revalidate after a tab
+  // returns and on a bounded cadence so revocation/deactivation clears the protected shell
+  // without relying on a browser-held role or requiring a new login.
+  useEffect(() => {
+    if (!user) return;
+    const revalidate = () => { if (document.visibilityState === 'visible') void refresh(); };
+    window.addEventListener('focus', revalidate);
+    document.addEventListener('visibilitychange', revalidate);
+    const interval = window.setInterval(() => void refresh(), 60_000);
+    return () => {
+      window.removeEventListener('focus', revalidate);
+      document.removeEventListener('visibilitychange', revalidate);
+      window.clearInterval(interval);
+    };
+  }, [refresh, user]);
+
   const switchOrganization = useCallback(async (organizationId: string) => {
     if (!user) throw new Error('Organization access requires an authenticated user.');
     setSwitching(true);
@@ -75,10 +81,4 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
     activeRole: activeMembership?.role ?? null, error, switchOrganization, refresh }),
     [loading, switching, memberships, activeMembership, error, switchOrganization, refresh]);
   return <OrganizationContext.Provider value={value}>{children}</OrganizationContext.Provider>;
-}
-
-export function useOrganization() {
-  const value = useContext(OrganizationContext);
-  if (!value) throw new Error('useOrganization must be used inside OrganizationProvider');
-  return value;
 }

@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(16);
+select plan(22);
 
 insert into auth.users(id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at)
 values
@@ -64,5 +64,28 @@ select is(
   (select count(*)::int from public.audit_events where target_id='30000000-0000-0000-0000-000000000006'
     and action='invitation.accepted' and correlation_id='70000000-0000-4000-8000-000000000001'),
   1, 'invitation acceptance writes its correlated audit event atomically');
+select is((select count(*)::int from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+  where n.nspname='public' and p.proname in ('is_active_member','is_org_admin','is_platform_admin')), 0,
+  'security definer RLS predicates are not exposed in the public API schema');
+set local role authenticated;
+select throws_ok($$select public.trusted_manage_organization(
+  '00000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000002',null,
+  'Org C','org-c','active','70000000-0000-4000-8000-000000000002')$$,'42501',null,
+  'authenticated caller cannot invoke trusted organization administration');
+reset role; set local role service_role;
+select throws_ok($$select public.trusted_manage_organization(
+  '00000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000002',null,
+  'Org C','org-c','active','70000000-0000-4000-8000-000000000002')$$,
+  'P0001','platform admin required','org admin cannot administer another tenant');
+select lives_ok($$select public.trusted_manage_organization(
+  '00000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000002',null,
+  'Org C','org-c','active','70000000-0000-4000-8000-000000000002')$$,
+  'platform admin can create an organization through the trusted boundary');
+select is((select count(*)::int from public.audit_events where action='organization.created'
+  and correlation_id='70000000-0000-4000-8000-000000000002'),1,'trusted organization creation is audited atomically');
+update public.organizations set status='deactivated' where id='20000000-0000-0000-0000-000000000001';
+reset role; set local role authenticated;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000001',true);
+select is((select count(*)::int from public.departments),0,'deactivated organization immediately removes member access');
 select * from finish();
 rollback;

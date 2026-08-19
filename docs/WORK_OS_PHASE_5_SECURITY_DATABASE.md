@@ -71,8 +71,8 @@ The shell follows: auth initialization → loading; unauthenticated → existing
 
 - `20260818000100_phase_5_security_foundation.sql`: types, tables, constraints/indexes, security predicates, forced deny-by-default RLS policies, grants, and trusted atomic membership/audit function.
 - `20260819000100_phase_5_security_function_acl.sql` and `20260819000200_phase_5_table_privilege_hardening.sql`: remotely applied function/table privilege corrections.
-- `20260819000300_trusted_invitation_acceptance.sql`: pending deployment; service-role-only invitation activation and correlated atomic audit.
-- The foundation and hardening migrations are applied remotely; the invitation acceptance migration is the next forward-only remote change.
+- `20260819000300_trusted_invitation_acceptance.sql`: remotely applied; service-role-only invitation activation and correlated atomic audit.
+- `20260819000400_phase_5_org_lifecycle_and_private_predicates.sql`: pending deployment; private RLS predicates plus minimum trusted organization lifecycle and deactivation enforcement.
 
 ## 11. Security and policy test inventory
 
@@ -99,7 +99,7 @@ Bounded searches found no `VITE_*` service-role/password secret, second `createC
 
 ## 13. Known limitations
 
-- Remote Supabase has the foundation/hardening chain; the new invitation-acceptance migration and Edge Function remain pending deployment.
+- Remote Supabase has the foundation, hardening, and invitation-acceptance chain; the organization-lifecycle/private-predicate migration and Edge Function remain pending deployment.
 - Local policy execution requires Docker and the Supabase CLI; repository pgTAP coverage is present but results must not be inferred where tooling is unavailable.
 - Invitation/identity Edge code requires deployment and remote threat/E2E testing; email delivery, redirect allowlisting, expiry, duplicate identity behavior, and provider rate limits are not proven locally.
 - Initial tenant, organization, and Platform Admin bootstrap needs a reviewed operator runbook and trusted administrative execution.
@@ -124,4 +124,4 @@ This migration is forward-only. Do not edit it after remote application. Before 
 
 ## 16. Phase 5 acceptance status
 
-**PHASE 5 — REMOTE VERIFICATION IN PROGRESS.** The remote database foundation is applied and hardened. Founder evidence confirms that the changed password authenticates the real user and loads the expected MARQ Networks Platform Administrator console. GAP-064 remains fixed awaiting founder re-test. GAP-002 is fixed in the repository and awaits its forward migration, Edge deployment, and remote invite/accept security journeys. Phase 5 remains incomplete pending those checks, JWT/logout evidence, Employee and Org Admin journeys, cross-role/cross-organization negatives, recovery delivery/redirect/expiry cases, and remote throttling behavior.
+**PHASE 5 — REMOTE VERIFICATION IN PROGRESS.** The remote database foundation, hardening, and invitation acceptance migration are applied, and `identity-administration` is active with JWT verification. Founder evidence confirms that the changed password authenticates the real user and loads the expected MARQ Networks Platform Administrator console. GAP-064 remains fixed awaiting founder re-test. GAP-002's RPC boundary has remote rollback-only proof but still awaits real email/acceptance E2E. The organization lifecycle/private-predicate migration and endpoint await deployment. Phase 5 remains incomplete pending those checks, JWT/logout evidence, Employee and Org Admin journeys, cross-role/cross-organization negatives, recovery delivery/redirect/expiry cases, leaked-password protection, and remote throttling behavior.

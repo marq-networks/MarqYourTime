@@ -76,6 +76,12 @@ Deno.serve(async (request) => {
     return response(403, 'INVITATION_DENIED', 'The invitation is not permitted for this organization.');
   }
 
+  if (input.action === 'resend') {
+    const { error } = await admin.auth.resend({ type: 'signup', email: command.email });
+    if (error) return response(409, 'INVITATION_NOT_SENT', 'The invitation could not be sent.');
+    return response(200, 'INVITATION_SENT', 'Invitation sent.');
+  }
+
   const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(command.email, {
     data: { invitation_organization_id: command.organizationId },
   });

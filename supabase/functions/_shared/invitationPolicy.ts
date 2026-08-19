@@ -1,6 +1,6 @@
 import type { InvitationCommand, MembershipRole } from './trustedOperations.ts';
 
-export type InvitationAction = 'invite' | 'accept';
+export type InvitationAction = 'invite' | 'accept' | 'resend';
 
 export interface InvitationRequest {
   action: InvitationAction;
@@ -23,7 +23,7 @@ export function parseInvitationRequest(value: unknown): InvitationRequest {
 
   const input = value as Record<string, unknown>;
   if (input.action === 'accept') return { action: 'accept' };
-  if (input.action !== 'invite') throw new RequestValidationError('Unsupported invitation action.');
+  if (input.action !== 'invite' && input.action !== 'resend') throw new RequestValidationError('Unsupported invitation action.');
 
   const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
   const tenantId = typeof input.tenantId === 'string' ? input.tenantId : '';
@@ -38,10 +38,10 @@ export function parseInvitationRequest(value: unknown): InvitationRequest {
     throw new RequestValidationError('A supported membership role is required.');
   }
 
-  return { action: 'invite', email, tenantId, organizationId, role: role as MembershipRole };
+  return { action: input.action, email, tenantId, organizationId, role: role as MembershipRole };
 }
 
 export function toInvitationCommand(request: InvitationRequest): InvitationCommand {
-  if (request.action !== 'invite') throw new RequestValidationError('Invite details are required.');
+  if (request.action !== 'invite' && request.action !== 'resend') throw new RequestValidationError('Invite details are required.');
   return request as InvitationCommand & InvitationRequest;
 }

@@ -32,4 +32,8 @@ describe('trusted invitation request policy', () => {
       action: 'accept',
     });
   });
+
+  it('validates resend through the same trusted scope policy', () => {
+    expect(parseInvitationRequest({ ...validInvite, action: 'resend' }).action).toBe('resend');
+  });
 });

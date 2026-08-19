@@ -23,6 +23,8 @@ import {
 import { usePeopleData } from '../../../services';
 import type { Employee } from '../../../services';
 import { toast } from 'sonner';
+import { useOrganization } from '../../../contexts/organizationContextValue';
+import { inviteMember } from '../../../security/identityAdministration';
 
 // UI-local member shape (flattened for table)
 interface Member {
@@ -50,11 +52,10 @@ function toMember(e: Employee): Member {
 export function A04Members() {
   const {
     employees,
-    departments,
     loading,
-    createEmployee,
     deleteEmployee,
   } = usePeopleData();
+  const { activeMembership } = useOrganization();
 
   const members: Member[] = employees.map(toMember);
 
@@ -78,7 +79,7 @@ export function A04Members() {
   };
 
   const handleInviteMember = async () => {
-    if (!memberForm.name || !memberForm.email || !memberForm.role || !memberForm.department) {
+    if (!memberForm.email || !memberForm.role || !activeMembership) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -94,17 +95,11 @@ export function A04Members() {
 
     setIsSubmitting(true);
     try {
-      const dept = departments.find(d => d.name === memberForm.department);
-      await createEmployee({
-        name: memberForm.name,
+      await inviteMember({
         email: memberForm.email,
-        role: memberForm.role,
-        department: memberForm.department,
-        departmentId: dept?.id || '',
-        status: memberForm.status,
-        lastSeen: 'Just now',
-        joinDate: new Date().toISOString().split('T')[0],
-        employmentType: 'Full-time',
+        role: memberForm.role as 'employee' | 'org_admin',
+        tenantId: activeMembership.tenantId,
+        organizationId: activeMembership.organizationId,
       });
       toast.success(`Invitation sent to ${memberForm.email}`);
       setIsInviteOpen(false);
@@ -359,16 +354,6 @@ export function A04Members() {
           </p>
         </div>
 
-        <FormField label="Full Name">
-          <Input
-            type="text"
-            placeholder="e.g. John Doe"
-            value={memberForm.name}
-            onChange={e => setMemberForm(prev => ({ ...prev, name: e.target.value }))}
-            required
-          />
-        </FormField>
-
         <FormField label="Email Address">
           <Input
             type="email"
@@ -379,39 +364,16 @@ export function A04Members() {
           />
         </FormField>
 
-        <FormField label="Role / Job Title">
-          <Input
-            type="text"
-            placeholder="e.g. Software Engineer"
+        <FormField label="Membership Role">
+          <select
+            className="w-full px-3 py-2 rounded-md border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
             value={memberForm.role}
             onChange={e => setMemberForm(prev => ({ ...prev, role: e.target.value }))}
             required
-          />
-        </FormField>
-
-        <FormField label="Department">
-          <select
-            className="w-full px-3 py-2 rounded-md border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-            value={memberForm.department}
-            onChange={e => setMemberForm(prev => ({ ...prev, department: e.target.value }))}
-            required
           >
-            <option value="">Select Department</option>
-            {uniqueDepartments.map(dept => (
-              <option key={dept} value={dept}>{dept}</option>
-            ))}
-          </select>
-        </FormField>
-
-        <FormField label="Initial Status">
-          <select
-            className="w-full px-3 py-2 rounded-md border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-            value={memberForm.status}
-            onChange={e => setMemberForm(prev => ({ ...prev, status: e.target.value as Employee['status'] }))}
-          >
-            <option value="Active">Active</option>
-            <option value="Away">Away</option>
-            <option value="Offline">Offline</option>
+            <option value="">Select role</option>
+            <option value="employee">Employee</option>
+            <option value="org_admin">Organization Admin</option>
           </select>
         </FormField>
       </FormDrawer>
