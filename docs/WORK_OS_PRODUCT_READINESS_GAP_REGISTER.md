@@ -275,7 +275,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | ID | Sev | Category / finding | Phase | Owner | Safe now? | Dependency | Proof required |
 |---|---|---|---|---|---|---|---|
 | GAP-001 | P0 | **PARTIAL POSITIVE MANUAL EVIDENCE:** real password login loaded `team@marqnetworks.com`, Platform Administrator, MARQ Networks, and the protected Platform Admin console; JWT inspection, logout, cross-role, and negative access remain unverified | 5 | Security | Partially verified 2026-08-19 | reviewer environment/role fixtures | JWT, logout, all-role, cross-org and forbidden-operation evidence |
-| GAP-002 | P0 | Invitation/identity administration endpoint not deployed | 5 | Security/People | No | trusted runtime + email policy | invite/accept negative/positive E2E |
+| GAP-002 | P0 | **FIXED IN REPOSITORY — AWAITING DEPLOYMENT / REMOTE VERIFICATION:** trusted invitation/identity administration Edge endpoint, backend-derived authorization, compensated identity creation, and atomic acceptance audit are implemented | 5 | Security/People | Fixed in repository | Edge deployment + Auth email policy | invite/accept negative/positive E2E |
 | GAP-003 | P0 | Canonical Members falsely treats Employee creation as invitation/membership | 5/6 | People | Yes after endpoint | GAP-002 | identity+membership+email+audit proof |
 | GAP-004 | P0 | People Directory localStorage is authoritative and conflates security identity | 8 | People | No | lifecycle contract/repository | RLS CRUD and migration parity |
 | GAP-005 | P0 | Org Audit displays mock analytics activity, not trusted audit | 8 | Audit | No | audit read repository | cross-org denial and provenance test |
@@ -458,4 +458,4 @@ Work OS is production-ready only when all P0/P1 findings are closed with linked 
 
 ## 29. Exact next action and stop
 
-**Next action:** deploy and manually re-test `GAP-064`, then complete the still-open `GAP-001` evidence: inspect the authenticated JWT, verify logout/back-navigation, and exercise Org Admin, Employee, cross-role, and cross-organization negative cases. Continue independent Batch 1 implementation with `GAP-002`; do not begin broad Phase 7/8 implementation or delete mocks from this audit.
+**Next action:** deploy and remotely verify `GAP-002` invitation/acceptance, while retaining `GAP-064` as fixed awaiting founder re-test and completing the still-open `GAP-001` JWT/logout/role/negative evidence when the founder is available. Continue the next independent Batch 1 boundary (`GAP-007`) without beginning Phase 6 or broad Phase 7/8 implementation.
