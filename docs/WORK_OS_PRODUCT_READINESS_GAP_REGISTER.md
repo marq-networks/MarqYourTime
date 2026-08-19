@@ -275,18 +275,18 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | ID | Sev | Category / finding | Phase | Owner | Safe now? | Dependency | Proof required |
 |---|---|---|---|---|---|---|---|
 | GAP-001 | P0 | **PARTIAL POSITIVE MANUAL EVIDENCE:** real password login loaded `team@marqnetworks.com`, Platform Administrator, MARQ Networks, and the protected Platform Admin console; JWT inspection, logout, cross-role, and negative access remain unverified | 5 | Security | Partially verified 2026-08-19 | reviewer environment/role fixtures | JWT, logout, all-role, cross-org and forbidden-operation evidence |
-| GAP-002 | P0 | Invitation/identity administration endpoint not deployed | 5 | Security/People | No | trusted runtime + email policy | invite/accept negative/positive E2E |
-| GAP-003 | P0 | Canonical Members falsely treats Employee creation as invitation/membership | 5/6 | People | Yes after endpoint | GAP-002 | identity+membership+email+audit proof |
+| GAP-002 | P0 | **DEPLOYED — AWAITING MANUAL VERIFICATION:** trusted migration and active Edge endpoint passed rollback-only RPC/audit proof; real email/acceptance E2E remains | 5 | Security/People | Deployed | Auth email delivery | invite/accept negative/positive E2E |
+| GAP-003 | P0 | **CODE COMPLETE:** canonical Members now calls the trusted invitation boundary and no longer creates a prototype Employee while claiming an invitation | 5/6 | People | Phase-5 behavior fixed | GAP-002 email E2E | identity+membership+email+audit proof |
 | GAP-004 | P0 | People Directory localStorage is authoritative and conflates security identity | 8 | People | No | lifecycle contract/repository | RLS CRUD and migration parity |
 | GAP-005 | P0 | Org Audit displays mock analytics activity, not trusted audit | 8 | Audit | No | audit read repository | cross-org denial and provenance test |
 | GAP-006 | P0 | Global Audit displays static fabricated records | 8 | Audit | No | platform audit repository | global/platform policy E2E |
-| GAP-007 | P0 | Trusted tenant/org/platform CRUD boundary absent | 5/6 | Platform | No | endpoint/runbook/matrix | cross-tenant + atomic audit tests |
+| GAP-007 | P0 | **CODE COMPLETE — AWAITING DEPLOYMENT:** minimum trusted organization create/update/deactivate boundary with Platform Admin authorization and atomic audit is implemented | 5/6 | Platform | Phase-5 behavior fixed | migration/Edge deployment | cross-tenant + atomic audit tests |
 | GAP-008 | P0 | **FIXED — AWAITING REMOTE VERIFICATION:** raw sign-in errors are now bounded; remote abuse/rate-limit configuration remains unverified | 5/10 | Security | Bounded UX fixed in `332dde9` | project config | focused mapping tests pass; remote enumeration/rate-limit test required |
 | GAP-009 | P1 | **FIXED — AWAITING REMOTE VERIFICATION:** forgot-password request flow is implemented with enumeration-safe UX and bounded errors | 5/6 | Auth | Fixed in `332dde9` | SMTP/redirect config | focused request/error tests pass; delivery E2E required |
 | GAP-010 | P1 | Recovery email/expired-link/redirect round trip unverified | 5 | Auth | No | production Auth config | real link E2E |
-| GAP-011 | P1 | Invite acceptance/first login/resend confirmation missing | 5/6 | Auth | No | GAP-002/SMTP | lifecycle E2E |
+| GAP-011 | P1 | **CODE COMPLETE — AWAITING MANUAL VERIFICATION:** JWT-derived acceptance and authorized resend are implemented; first-login and real email behavior remain unverified | 5/6 | Auth | Phase-5 behavior fixed | GAP-002/SMTP | lifecycle E2E |
 | GAP-012 | P1 | Change password/email/security settings missing | 6 | Account | No | account policy | authenticated account E2E |
-| GAP-013 | P1 | Session expiry/refresh/revocation UX unverified | 5/10 | Auth | No | real environment | expiry/revocation tests |
+| GAP-013 | P1 | **CODE COMPLETE — AWAITING REMOTE VERIFICATION:** Supabase owns refresh/restoration and organization authorization now revalidates on focus, visibility return, and bounded cadence | 5/10 | Auth | Phase-5 behavior fixed | real environment | expiry/revocation tests |
 | GAP-014 | P1 | Downstream domain stores do not invalidate/scope on organization switch | 6–8 | Shared | No | production query boundary | no stale/cross-org data test |
 | GAP-015 | P1 | Platform organizations/create/detail are hard-coded/local | 5/6 | Platform | No | GAP-007 | empty/create/edit/context tests |
 | GAP-016 | P1 | Organization settings are prototype/local | 6 | Platform | No | trusted update boundary | validation/RLS/audit E2E |
@@ -309,9 +309,9 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-033 | P1 | Canonical forms/dialogs/tables/mobile/accessibility unverified | 6/10 | UX | No | QA tooling | keyboard/screen reader/320px audit |
 | GAP-034 | P2 | Department UI bypasses existing production table | 8 | People | No | repository/mutation semantics | CRUD/RLS/empty/error tests |
 | GAP-035 | P2 | My Profile is mock; avatar/preferences persistence undefined | 8 | People | No | profile/storage policy | self-update/privacy tests |
-| GAP-036 | P2 | Deactivation/reactivation/removal session effects incomplete | 5/8 | People/Security | No | lifecycle policy | revoked-session/access test |
+| GAP-036 | P2 | **CODE COMPLETE — AWAITING REMOTE VERIFICATION:** membership and organization revocation is periodically/focus-revalidated and deactivated organizations fail backend predicates | 5/8 | People/Security | Phase-5 behavior fixed | GAP-007 deployment | revoked-session/access test |
 | GAP-037 | P2 | Account deletion/worker retention policy unresolved | 8/10 | Product | No | founder decision | recorded policy + tests |
-| GAP-038 | P2 | Empty/deactivated organization lifecycle undefined | 5/6 | Platform | No | founder/architecture decision | safe no-access state E2E |
+| GAP-038 | P2 | **CODE COMPLETE — AWAITING REMOTE VERIFICATION:** deactivated organizations grant no membership authorization and the existing protected shell renders no-access when no active membership remains | 5/6 | Platform | Phase-5 behavior fixed | GAP-007 deployment | safe no-access state E2E |
 | GAP-039 | P2 | Loading/error/empty/retry states inconsistent | 6–8 | Shared | Yes per slice | error contract adoption | forced failure/empty tests |
 | GAP-040 | P2 | Service errors swallowed or generic | 6 | Shared | Yes per slice | structured errors/monitoring | surfaced bounded error + telemetry |
 | GAP-041 | P2 | Fake waits/toast-only success across canonical and legacy actions | 6–8 | Shared | Yes per slice | real repositories | durable result before success |
@@ -343,7 +343,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 
 | Phase | Findings / required outcome |
 |---|---|
-| **5** | GAP-001–003, 007–013, 036, 038, 064: complete real auth/JWT/RBAC verification, trusted identity/membership/org operations, bounded auth behavior. **Do not close until proof passes.** |
+| **5** | GAP-001, 002, 003, 007, 008, 009, 010, 011, 013, 036, 038, 064: complete real auth/JWT/RBAC verification, trusted identity/membership/org operations, bounded auth behavior. **GAP-012 remains Phase 6. Do not close until proof passes.** |
 | **6** | production route containment, error/env/query foundations, quality baseline, E2E scaffolding, SMTP/deployment/observability, initial performance and accessibility baselines |
 | **7** | GAP-017–019, 054: one secure production Work vertical slice, then canonical Work replacement and legacy parity |
 | **8** | production People/Time/Reporting/Audit repositories and workflows; retire corresponding mock authority only after parity |
@@ -458,4 +458,4 @@ Work OS is production-ready only when all P0/P1 findings are closed with linked 
 
 ## 29. Exact next action and stop
 
-**Next action:** deploy and manually re-test `GAP-064`, then complete the still-open `GAP-001` evidence: inspect the authenticated JWT, verify logout/back-navigation, and exercise Org Admin, Employee, cross-role, and cross-organization negative cases. Continue independent Batch 1 implementation with `GAP-002`; do not begin broad Phase 7/8 implementation or delete mocks from this audit.
+**Next action:** deploy and remotely verify `GAP-002` invitation/acceptance, while retaining `GAP-064` as fixed awaiting founder re-test and completing the still-open `GAP-001` JWT/logout/role/negative evidence when the founder is available. Continue the next independent Batch 1 boundary (`GAP-007`) without beginning Phase 6 or broad Phase 7/8 implementation.

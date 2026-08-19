@@ -37,13 +37,13 @@ All seven tenant-sensitive tables have RLS enabled and forced. Absence of a poli
 
 | Operation | Boundary | Required proof / implementation |
 |---|---|---|
-| Invitations and acceptance | Edge Function/server | Validate payload, verify Supabase session, recompute actor membership, administer identity, call trusted DB operation |
+| Invitations and acceptance | `identity-administration` Edge Function | Validate payload, verify Supabase session, recompute actor membership, administer identity, compensate a failed membership write, and activate JWT-derived invitations with atomic audit |
 | Membership create/remove | Edge Function/server + `trusted_set_membership` | Server-only service-role client; DB rechecks actor membership and scope |
 | Role change | Same trusted path | Org Admin can assign only non-platform roles in own org; Platform Admin required for platform role |
 | Platform cross-tenant operation | Edge Function/server | Active backend Platform Admin membership; explicit target and audit |
 | Identity administration | Edge Function/server | Admin Auth API secret remains server-only |
 
-The shared Edge Function contracts are scaffolding, not deployed endpoints. No service-role credential is present in browser code or repository configuration.
+The shared Edge contracts and `identity-administration` handler are implemented in the repository but not yet deployed. The handler accepts only bounded invite/accept commands, verifies the caller token, recomputes active backend administration rights before sending an invitation, calls service-role-only database functions, and never accepts a user ID for invitation acceptance. No service-role credential is present in browser code or repository configuration.
 
 ## 6. Audit model
 
@@ -70,11 +70,13 @@ The shell follows: auth initialization → loading; unauthenticated → existing
 ## 10. Migration inventory
 
 - `20260818000100_phase_5_security_foundation.sql`: types, tables, constraints/indexes, security predicates, forced deny-by-default RLS policies, grants, and trusted atomic membership/audit function.
-- Migrations have not been applied remotely. The repository chain is now the intended database source of truth.
+- `20260819000100_phase_5_security_function_acl.sql` and `20260819000200_phase_5_table_privilege_hardening.sql`: remotely applied function/table privilege corrections.
+- `20260819000300_trusted_invitation_acceptance.sql`: remotely applied; service-role-only invitation activation and correlated atomic audit.
+- `20260819000400_phase_5_org_lifecycle_and_private_predicates.sql`: pending deployment; private RLS predicates plus minimum trusted organization lifecycle and deactivation enforcement.
 
 ## 11. Security and policy test inventory
 
-`phase_5_rls.sql` is a pgTAP transaction that seeds two tenants and organizations and proves thirteen required cases: anonymous privilege-layer denial; employee cross-org denial; self-promotion denial; denial of employee job-title and department updates; same-org success; unrelated Org Admin denial; Org Admin platform promotion denial; backend-derived Platform Admin global access alongside current-user-only membership selection; inactive denial; submitted organization/filter inability to bypass; and audit delete denial. It rolls back all fixtures. Run via `supabase test db` after `supabase start` and migration reset.
+`phase_5_rls.sql` is a pgTAP transaction that seeds two tenants and organizations and proves sixteen required cases: anonymous privilege-layer denial; employee cross-org denial; self-promotion denial; denial of employee job-title and department updates; same-org success; unrelated Org Admin denial; Org Admin platform promotion denial; backend-derived Platform Admin global access alongside current-user-only membership selection; inactive denial; submitted organization/filter inability to bypass; audit delete denial; authenticated invitation-function denial; trusted acceptance; and correlated acceptance audit. It rolls back all fixtures. Run via `supabase test db` after `supabase start` and migration reset.
 
 ## 11.1 Reviewer-found Phase 5 corrections
 
@@ -97,9 +99,9 @@ Bounded searches found no `VITE_*` service-role/password secret, second `createC
 
 ## 13. Known limitations
 
-- Remote Supabase has not been migrated, so the production shell requires reviewed remote application before it can load memberships.
+- Remote Supabase has the foundation, hardening, and invitation-acceptance chain; the organization-lifecycle/private-predicate migration and Edge Function remain pending deployment.
 - Local policy execution requires Docker and the Supabase CLI; repository pgTAP coverage is present but results must not be inferred where tooling is unavailable.
-- Invitation/identity Edge Functions are typed boundaries only. They must be implemented and threat-tested before those operations ship.
+- Invitation/identity Edge code requires deployment and remote threat/E2E testing; email delivery, redirect allowlisting, expiry, duplicate identity behavior, and provider rate limits are not proven locally.
 - Initial tenant, organization, and Platform Admin bootstrap needs a reviewed operator runbook and trusted administrative execution.
 - Worker-profile fields are intentionally minimal and browser read-only; authoritative employment administration belongs to a later approved administration boundary.
 - Prototype routes/screens remain registered and may display mock data after shell entry; their data is not production authority.
@@ -122,4 +124,4 @@ This migration is forward-only. Do not edit it after remote application. Before 
 
 ## 16. Phase 5 acceptance status
 
-**PHASE 5 — REMOTE VERIFICATION IN PROGRESS.** The remote database is applied and hardened. Founder evidence confirms that the changed password authenticates the real user and loads the expected MARQ Networks Platform Administrator console. That run exposed a false recovery failure after an accepted update; GAP-064 now separates update success from cleanup and awaits deployed re-test. Phase 5 remains incomplete pending JWT/logout evidence, Employee and Org Admin journeys, cross-role/cross-organization negatives, recovery delivery/redirect/expiry cases, and remote throttling behavior.
+**PHASE 5 — REMOTE VERIFICATION IN PROGRESS.** The remote database foundation, hardening, and invitation acceptance migration are applied, and `identity-administration` is active with JWT verification. Founder evidence confirms that the changed password authenticates the real user and loads the expected MARQ Networks Platform Administrator console. GAP-064 remains fixed awaiting founder re-test. GAP-002's RPC boundary has remote rollback-only proof but still awaits real email/acceptance E2E. The organization lifecycle/private-predicate migration and endpoint await deployment. Phase 5 remains incomplete pending those checks, JWT/logout evidence, Employee and Org Admin journeys, cross-role/cross-organization negatives, recovery delivery/redirect/expiry cases, leaked-password protection, and remote throttling behavior.

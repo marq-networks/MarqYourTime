@@ -3,7 +3,34 @@
 **Last updated:** 2026-08-19
 **Current checkpoint:** PHASE 5 — REMOTE VERIFICATION IN PROGRESS. Founder evidence confirms real password login reaches the expected MARQ Networks Platform Administrator console; JWT inspection, logout, remaining roles, and negative authorization cases remain open.
 
-**Current remediation batch:** Batch 1 — Phase 5 closure blockers. GAP-064 was added after deployed recovery falsely reported failure even though the new password worked. Repository remediation now treats accepted password persistence separately from sign-out cleanup, renders truthful success (with bounded cleanup guidance), maps same-password/weak-password/invalid-session outcomes safely, and adds focused regressions. It awaits deployed re-test. Remaining P0 work is GAP-001's incomplete verification, GAP-002, GAP-007, and GAP-008's remote proof; the next independent code gap remains GAP-002.
+**Current remediation batch:** Batch 1 — Phase 5 closure only. GAP-064 remains fixed and deployed awaiting founder re-test. GAP-002's migration and active Edge Function are remotely deployed; direct untrusted RPC denial, service-role execution, and rollback-only correlated audit proof passed, while real email acceptance remains manual. GAP-001 retains the founder's positive login/password/Platform Admin/MARQ Networks evidence. GAP-007/038 minimum Phase-5 trusted organization lifecycle and secure deactivation behavior are now code complete and pending remote deployment/verification. Phase 6 has not begun.
+
+## PHASE 5 CLOSEOUT SCOREBOARD
+
+**TOTAL PHASE-5 GAPS: 12**
+
+| ID | Status | Code complete? | Remote deployed? | Automated proof? | Manual proof? | Blocker | Next action |
+|---|---|---:|---:|---|---|---|---|
+| GAP-001 | AWAITING MANUAL VERIFICATION | Yes | Yes | Repository auth/RLS tests | Partial positive login evidence | Controlled role fixtures | Complete consolidated JWT/logout/role/negative QA |
+| GAP-002 | AWAITING MANUAL VERIFICATION | Yes | Yes | Remote RPC denial/service-role/rollback audit passed | No real email acceptance | Email recipient journey | Invite and accept controlled users |
+| GAP-003 | CODE COMPLETE | Yes | GAP-002 endpoint yes; UI pending | Focused build/unit proof | No | Current frontend deployment | Deploy Members correction, then exercise invite |
+| GAP-007 | CODE COMPLETE | Yes | No | pgTAP cases added; local DB unavailable | No | Migration and Edge deployment | Review, apply migration, deploy endpoint, run remote negatives |
+| GAP-008 | AWAITING MANUAL VERIFICATION | Yes | Yes | Bounded mapping tests pass | No throttling proof | Supabase project configuration | Exercise remote throttling and inspect Auth settings |
+| GAP-009 | AWAITING MANUAL VERIFICATION | Yes | Yes | Forgot-password tests pass | No delivery proof | SMTP/redirect environment | Complete recovery email journey |
+| GAP-010 | AWAITING MANUAL VERIFICATION | Yes | Yes | Invalid-session mapping test passes | No round-trip proof | Real recovery email | Verify redirect, expiry, and invalid link |
+| GAP-011 | AWAITING MANUAL VERIFICATION | Yes | Yes | Acceptance policy/RPC tests pass | No first-login proof | Real invitation email | Verify acceptance and first login; document resend behavior |
+| GAP-013 | CODE COMPLETE | Yes | Frontend pending | Auth event and protected-shell tests pass | No refresh/revocation proof | Real-session timing | Deploy and test restore, refresh, revoke |
+| GAP-036 | CODE COMPLETE | Yes | No | Deactivation pgTAP case added | No | GAP-007 deployment | Verify inactive/deleted membership removal in app |
+| GAP-038 | CODE COMPLETE | Yes | No | Deactivated-org denial case added | No | GAP-007 deployment | Verify deactivated and empty-org no-access states |
+| GAP-064 | AWAITING MANUAL VERIFICATION | Yes | Yes | Recovery outcome regressions pass | No deployed re-test | Founder reset journey | Repeat reset and confirm truthful success |
+
+**VERIFIED: 0 / 12**
+
+**AWAITING MANUAL: 7 / 12**
+
+**OPEN: 5 / 12**
+
+Security Advisor closeout: public `SECURITY DEFINER` RLS predicates are moved to a non-exposed `private` schema by the pending Phase-5 migration, with direct public API exposure regression-tested. Supabase leaked-password protection is a Phase-5 Auth security setting, not silently deferred; it remains an external project-setting blocker to verify/enable before Phase 5 can close.
 
 ## Phase 1 + 2 final verification — 2026-08-18
 - **Verdict:** VERIFIED / COMPLETE; no product blocker found.
@@ -108,4 +135,5 @@ Remain inside Phase 5 until its schema/security acceptance gates are proven. Do 
 - The Batch 1 auth remediation now maps sign-in failures to bounded credential/throttling messages and adds an enumeration-safe forgot-password request mode using Supabase Auth with an explicit same-origin reset redirect. Eight focused auth/UI tests and the full 21-test repository suite pass; remote delivery, configured redirects, provider throttling, and real-session behavior remain external verification rather than claimed green.
 - Founder manual evidence confirms the real authentication happy path: the new password authenticated `team@marqnetworks.com` and loaded the Platform Administrator membership, MARQ Networks organization, and protected Platform Admin console. This is positive but partial GAP-001 evidence; JWT inspection, logout, remaining roles, and negative cases are not inferred.
 - The same manual run exposed GAP-064: password persistence succeeded but recovery displayed a false failure. Tracing confirmed password update and subsequent sign-out were sequential within one throwing operation. They are now distinct outcomes: only `updateUser` failure rejects, sign-out failure returns a bounded cleanup result, and the screen always acknowledges an accepted update truthfully. Safe mappings distinguish same-password, weak-password, invalid recovery session, and unknown provider failure without exposing raw details.
+- GAP-002 repository remediation implements the `identity-administration` Edge Function. A verified bearer identity is re-authorized from active backend memberships before Auth invitation, the database remains the final authorization boundary, failed membership creation compensates the new Auth identity, and invited users can activate only their own JWT-derived memberships through a service-role-only function that writes correlated audit evidence in the same transaction. Payload policy regressions pass; Edge deployment, email delivery/link behavior, and real positive/negative journeys remain remote verification.
 - **Phase status: REMOTE VERIFICATION IN PROGRESS.** Phase 5 is not COMPLETE until the founder/reviewer completes a fresh real login and verifies the authenticated JWT plus backend Platform Admin membership.
