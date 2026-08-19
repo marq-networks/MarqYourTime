@@ -3,7 +3,7 @@
 **Last updated:** 2026-08-19
 **Current checkpoint:** PHASE 5 — DEPLOYED, CONSOLIDATED MANUAL VERIFICATION PENDING. PR #17 is merged and its Work OS Vercel deployment succeeded. The Phase-5 database and trusted Edge boundaries are remotely deployed; the remaining closeout work is the four consolidated QA journeys below plus the leaked-password-protection project setting.
 
-**Current remediation batch:** Batch 1 — Phase 5 closure only. Remote migration `20260819180940` (`phase_5_org_lifecycle_and_private_predicates`) is applied. `organization-administration` is ACTIVE with JWT verification, and `identity-administration` version 2 is ACTIVE with JWT verification and invitation resend support. Remote SQL verification passed the trusted organization-operation privilege boundary and rollback-only correlated audit check. No Phase-5 gap is waiting for deployment, but none is marked verified without its remaining production/manual evidence. Phase 6 has not begun.
+**Current remediation batch:** Batch 1 — Phase 5 closure only. QA-1 proved the production organization create path and correlated audit evidence, then exposed a GAP-013 revalidation UX defect: focus/visibility validation temporarily cleared the validated membership, causing `ProtectedShell` to unmount the current screen and discard an open dialog. The bounded correction separates initial blocking authorization from background revalidation, coalesces simultaneous focus/visibility signals, preserves the last validated membership until the backend result arrives, and atomically clears access when validation proves revocation. Deployment and QA-1 focus re-test remain required. Remote migration `20260819180940` and both trusted administration functions remain unchanged; Phase 6 has not begun.
 
 ## PHASE 5 CLOSEOUT SCOREBOARD
 
@@ -14,12 +14,12 @@
 | GAP-001 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Repository auth/RLS tests | Partial positive login evidence | Controlled role fixtures | QA-1, QA-3, QA-4 |
 | GAP-002 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Remote RPC denial/service-role/rollback audit passed | No real email acceptance | Email recipient journey | QA-2 |
 | GAP-003 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Focused build/unit proof | No invitation UI E2E | Email recipient journey | QA-2 |
-| GAP-007 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Remote privilege and rollback/audit checks passed | No lifecycle UI E2E | Controlled organization fixture | QA-1 |
+| GAP-007 | DEPLOYED — QA-1 FOCUS RE-TEST PENDING | Yes | Yes | Remote privilege and rollback/audit checks passed | Production create row and correlated `organization.created` audit event confirmed | Focus revalidation interrupts the journey | Deploy GAP-013 fix, then repeat bounded QA-1 lifecycle |
 | GAP-008 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Bounded mapping tests pass | No throttling proof | Supabase project configuration | QA-4 |
 | GAP-009 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Forgot-password tests pass | No delivery proof | SMTP/redirect environment | QA-4 |
 | GAP-010 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Invalid-session mapping test passes | No round-trip proof | Real recovery email | QA-4 |
 | GAP-011 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Acceptance policy/RPC tests pass | No first-login proof | Real invitation email | QA-2 |
-| GAP-013 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Auth event and protected-shell tests pass | No refresh/revocation proof | Real-session timing | QA-3, QA-4 |
+| GAP-013 | QA-1 FOCUS REVALIDATION FIX READY FOR DEPLOYMENT | Yes | Prior version | Initial/background, event coalescing, dialog preservation, and revocation tests pass | QA-1 exposed focus-driven dialog loss | Production focus/visibility cycle | Deploy and repeat QA-1 focus test; retain QA-3 revocation proof |
 | GAP-036 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Deactivation pgTAP and remote predicate checks passed | No revoked-session UI proof | Controlled membership fixture | QA-3 |
 | GAP-038 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Deactivated-org denial and remote predicate checks passed | No no-access UI proof | Controlled organization fixture | QA-1, QA-3 |
 | GAP-064 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Recovery outcome regressions pass | No deployed re-test | Real recovery email | QA-4 |

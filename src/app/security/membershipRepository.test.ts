@@ -35,6 +35,9 @@ describe('listCurrentMemberships', () => {
     const memberships = await listCurrentMemberships('signed-in-platform-admin');
 
     expect(query.eq).toHaveBeenCalledWith('user_id', 'signed-in-platform-admin');
+    expect(query.eq).toHaveBeenCalledWith('status', 'active');
+    expect(query.is).toHaveBeenCalledWith('deleted_at', null);
+    expect(query.select).toHaveBeenCalledWith(expect.stringContaining('organizations!inner'));
     expect(memberships).toEqual([expect.objectContaining({
       id: 'platform-membership',
       role: 'platform_admin',
