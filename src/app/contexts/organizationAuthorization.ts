@@ -16,21 +16,6 @@ export function selectOrganizationForSwitch(
   return memberships.find((item) => item.organizationId === organizationId) ?? null;
 }
 
-export function authorizationResponseIsCurrent(
-  requestUserId: string,
-  currentUserId: string | null,
-): boolean {
-  return requestUserId === currentUserId;
-}
-
-export function initialAuthorizationIsLoading(
-  userId: string | null,
-  validatedUserId: string | null,
-  loading: boolean,
-): boolean {
-  return Boolean(userId) && (loading || validatedUserId !== userId);
-}
-
 /** Coalesces focus/visibility/interval signals while one backend validation is active. */
 export function createRevalidationCoordinator(validate: () => Promise<void>) {
   let active: Promise<void> | null = null;
