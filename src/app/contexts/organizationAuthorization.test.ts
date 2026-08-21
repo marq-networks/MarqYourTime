@@ -1,6 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { ValidatedMembership } from '../security/types';
-import { createRevalidationCoordinator, createVisibleRevalidationHandler, selectOrganizationForSwitch, selectValidatedMembership } from './organizationAuthorization';
+import {
+  authorizationResponseIsCurrent,
+  createRevalidationCoordinator,
+  createVisibleRevalidationHandler,
+  initialAuthorizationIsLoading,
+  selectOrganizationForSwitch,
+  selectValidatedMembership,
+} from './organizationAuthorization';
 
 const active: ValidatedMembership = {
   id: 'membership-1', tenantId: 'tenant-1', organizationId: 'organization-1',
@@ -13,6 +20,28 @@ describe('organization authorization revalidation', () => {
     expect(selectValidatedMembership([active, second], null)).toEqual(active);
     expect(selectOrganizationForSwitch([active, second], 'organization-2')).toEqual(second);
     expect(selectOrganizationForSwitch([active, second], 'revoked-organization')).toBeNull();
+  });
+
+  it('keys blocking authorization to the stable authenticated user id', () => {
+    expect(initialAuthorizationIsLoading('user-1', null, false)).toBe(true);
+    expect(initialAuthorizationIsLoading('user-1', 'user-1', true)).toBe(true);
+    expect(initialAuthorizationIsLoading('user-1', 'user-1', false)).toBe(false);
+    expect(initialAuthorizationIsLoading('user-2', 'user-1', false)).toBe(true);
+    expect(initialAuthorizationIsLoading(null, 'user-1', false)).toBe(false);
+  });
+
+  it('accepts validation results only for the currently authenticated subject', () => {
+    expect(authorizationResponseIsCurrent('user-1', 'user-1')).toBe(true);
+    expect(authorizationResponseIsCurrent('user-1', 'user-2')).toBe(false);
+    expect(authorizationResponseIsCurrent('user-1', null)).toBe(false);
+  });
+
+  it('same-user replacement objects cannot create a new blocking identity state', () => {
+    const originalUser = { id: 'user-1', token: 'old' };
+    const refreshedUser = { id: 'user-1', token: 'new' };
+    expect(originalUser).not.toBe(refreshedUser);
+    expect(initialAuthorizationIsLoading(originalUser.id, originalUser.id, false)).toBe(false);
+    expect(initialAuthorizationIsLoading(refreshedUser.id, originalUser.id, false)).toBe(false);
   });
 
   it('clears authorization when validation excludes a revoked, inactive, or deleted membership', () => {
